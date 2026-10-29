@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'rea
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
-import { markReady, readTokens, SoftLights, useInView, useReducedMotion, type Tokens } from './shared';
+import { ReadyOnFirstFrame, readTokens, SoftLights, useInView, useReducedMotion, type Tokens } from './shared';
 
 type Item = { label: string; text: string };
 interface Props { items: Item[]; }
@@ -63,9 +63,9 @@ export default function ContactKeys({ items }: Props) {
           onCreated={({ gl, camera }) => {
             gl.toneMapping = THREE.NeutralToneMapping;
             camera.lookAt(0, 0, 0);
-            markReady(root.current, '.keys3d');
           }}
         >
+          <ReadyOnFirstFrame host={root} selector=".keys3d" />
           <SoftLights tint={t.lilac} />
           <Keys items={items} t={t} states={states} reduce={reduce} started={inView} kick={kick} />
           <ContactShadows position={[0, -0.36, 0]} opacity={0.35} scale={14} blur={2.4} far={1.5} frames={1} color={t.plum} />

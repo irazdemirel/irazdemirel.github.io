@@ -60,6 +60,8 @@ export function initMotion() {
   // Tetikleyiciler sayfadaki sıraya göre hesaplansın (pin boşlukları sonrakileri kaydırır)
   ScrollTrigger.sort();
   ScrollTrigger.refresh();
+  // font/görseller yüklenince sayfa boyu değişir: tetik konumlarını yeniden hesapla
+  if (document.readyState !== 'complete') addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
 }
 
 function smoothScroll() {
@@ -110,11 +112,19 @@ function titles() {
 }
 
 function reveals() {
-  ScrollTrigger.batch('.reveal', {
-    start: 'top 88%',
-    once: true,
-    onEnter: (batch) => gsap.to(batch, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.08 }),
-  });
+  const show = (els: Element[]) => gsap.to(els, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.08 });
+  ScrollTrigger.batch('.reveal', { start: 'top 88%', once: true, onEnter: show });
+  // Emniyet ağı: telefonda tetik konumu kayarsa (adres çubuğu, geç yüklenen font/görsel)
+  // kaydırma bitince ekranda olup hâlâ gizli kalan öğeler yine de gösterilir
+  const rescue = () => {
+    const missed = gsap.utils.toArray<HTMLElement>('.reveal').filter((el) => {
+      const r = el.getBoundingClientRect();
+      return getComputedStyle(el).visibility === 'hidden' && r.top < innerHeight && r.bottom > 0;
+    });
+    if (missed.length) show(missed);
+  };
+  ScrollTrigger.addEventListener('scrollEnd', rescue);
+  addEventListener('load', rescue, { once: true });
 }
 
 function parallax() {

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -80,6 +80,25 @@ export function usePointer() {
 // Adanın hazır olduğunu sayfaya bildir (CSS fallback'i gizlemek için)
 export function markReady(el: Element | null, selector: string, cls = 'ready') {
   el?.closest(selector)?.classList.add(cls);
+}
+
+// Yedek (CSS/HTML) görünüm, ancak ilk kare gerçekten çizilince gizlenir.
+// WebGL çizemezse ya da bağlam koparsa (telefonlarda olabiliyor) yedek görünüm geri gelir; alan boş kalmaz.
+export function ReadyOnFirstFrame({ host, selector, cls = 'ready' }: { host: RefObject<Element | null>; selector: string; cls?: string }) {
+  const gl = useThree((s) => s.gl);
+  const done = useRef(false);
+  useFrame(() => {
+    if (done.current) return;
+    done.current = true;
+    requestAnimationFrame(() => markReady(host.current, selector, cls)); // ilk kare ekranda
+  });
+  useEffect(() => {
+    const c = gl.domElement;
+    const lost = () => host.current?.closest(selector)?.classList.remove(cls);
+    c.addEventListener('webglcontextlost', lost);
+    return () => c.removeEventListener('webglcontextlost', lost);
+  }, [gl, host, selector, cls]);
+  return null;
 }
 
 // Yumuşak stüdyo ışığı: ambient + 1 key + rim, yansımalar için ışık panelleri

@@ -6,7 +6,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import { markReady, readTokens, SoftLights, usePointer, useReducedMotion, useInView, useScrollProgress, type Tokens } from './shared';
+import { ReadyOnFirstFrame, readTokens, SoftLights, usePointer, useReducedMotion, useInView, useScrollProgress, type Tokens } from './shared';
 
 export type ScreenPost = { title: string; date: string };
 interface Props { posts: ScreenPost[]; empty: string; prompt: string; }
@@ -32,9 +32,9 @@ export default function RetroComputer({ posts, empty, prompt }: Props) {
           gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
           onCreated={({ gl }) => {
             gl.toneMapping = THREE.NeutralToneMapping; // pasteller solmasın (ACES griye çeker)
-            markReady(root.current, '.pc3d');
           }}
         >
+          <ReadyOnFirstFrame host={root} selector=".pc3d" />
           <SoftLights tint={env.t.lilac} />
           <Rig progress={progress} reduce={reduce}>
             <Computer t={env.t} posts={posts} empty={empty} prompt={prompt} reduce={reduce} />

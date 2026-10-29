@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { markReady, readTokens, SoftLights, useInView, useReducedMotion, type Tokens } from './shared';
+import { ReadyOnFirstFrame, readTokens, SoftLights, useInView, useReducedMotion, type Tokens } from './shared';
 
 export default function AvatarBubble() {
   const root = useRef<HTMLDivElement>(null);
@@ -23,9 +23,9 @@ export default function AvatarBubble() {
           gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
           onCreated={({ gl }) => {
             gl.toneMapping = THREE.NeutralToneMapping;
-            markReady(root.current, '.bubble');
           }}
         >
+          <ReadyOnFirstFrame host={root} selector=".bubble" />
           <SoftLights tint={t.lilac} />
           <Scene host={root} reduce={reduce} />
         </Canvas>
