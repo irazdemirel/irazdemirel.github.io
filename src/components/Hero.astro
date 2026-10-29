@@ -2,7 +2,7 @@
 import Avatar from './Avatar.astro';
 import { site } from '../data/site';
 ---
-<section class="hero wrap" id="top">
+<section class="hero wrap hero-out" id="top">
   <div class="text">
     <p class="label">Portfolyo · Blog</p>
     <h1>
@@ -11,8 +11,13 @@ import { site } from '../data/site';
     </h1>
     <p class="learning">
       Sıfırdan
-      <span class="rot" aria-live="polite">
-        {site.learning.map((w, i) => <span class:list={['w', { on: i === 0 }]}>{w}</span>)}
+      <span class="sr">{site.learning.join(' ve ')}</span>
+      <span class="rot" aria-hidden="true">
+        <span class="ghost">&#8203;</span>
+        {site.learning.map((w, i) => <span class="w" data-step={i} aria-hidden="true">{w}</span>)}
+        <span class="w final" aria-hidden="true">
+          {site.learning.map((w, i) => <>{i > 0 && <span class="ve">ve</span>}<span class:list={['part', `p${i}`]}>{w}</span></>)}
+        </span>
       </span>
       öğreniyorum.
     </p>
@@ -22,20 +27,28 @@ import { site } from '../data/site';
       <a href="/blog/" class="btn ghost">Blog</a>
     </div>
   </div>
-  <div class="visual"><Avatar /></div>
+  <div class="visual"><div data-speed="0.12"><Avatar /></div></div>
 </section>
 
 <script>
-  // Dönen kelime (referans: Tiago Feitosa motion reels'i)
+  // Kelimeler sırayla döner, sonunda tek cümlede birleşir (referans: Tiago Feitosa reels'i)
   document.querySelectorAll<HTMLElement>('.rot').forEach((rot) => {
-    const words = [...rot.querySelectorAll<HTMLElement>('.w')];
-    if (words.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const steps = [...rot.querySelectorAll<HTMLElement>('.w')]; // son eleman: final
+    const show = (el: HTMLElement) => {
+      steps.forEach((x) => x.classList.toggle('on', x === el));
+      rot.style.width = el.scrollWidth + 'px';
+    };
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { show(steps[steps.length - 1]); return; }
     let i = 0;
-    setInterval(() => {
-      words[i].classList.remove('on');
-      i = (i + 1) % words.length;
-      words[i].classList.add('on');
-    }, 2200);
+    show(steps[0]);
+    const next = () => {
+      i++;
+      show(steps[i]);
+      if (i < steps.length - 1) setTimeout(next, 1800);
+      else rot.classList.add('merged');
+    };
+    setTimeout(next, 1800);
+    addEventListener('resize', () => show(steps[i]));
   });
 </script>
 
@@ -54,13 +67,23 @@ import { site } from '../data/site';
   .thin { font-weight: 300; }
   .bold { font-weight: 700; }
   .learning { font-size: clamp(20px, 2.4vw, 28px); margin: 0 0 16px; }
-  .rot { display: inline-grid; vertical-align: bottom; font-weight: 600; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .rot {
+    display: inline-block; position: relative; overflow: visible;
+    font-weight: 600; transition: width .5s cubic-bezier(.2,.8,.2,1); white-space: nowrap;
+  }
   .rot .w {
-    grid-area: 1 / 1; white-space: nowrap;
-    opacity: 0; transform: translateY(0.4em); transition: opacity 0.4s, transform 0.4s;
+    position: absolute; left: 0; top: 0; white-space: nowrap;
+    opacity: 0; transform: translateY(0.5em); transition: opacity .4s, transform .4s;
     text-decoration: underline wavy var(--muted) 1px; text-underline-offset: 6px;
   }
   .rot .w.on { opacity: 1; transform: none; }
+  .rot .final { text-decoration: none; }
+  .final .part { display: inline-block; text-decoration: underline wavy var(--muted) 1px; text-underline-offset: 6px; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
+  .final .ve { display: inline-block; padding: 0 .3em; font-weight: 400; opacity: 0; transition: opacity .5s .35s; }
+  .final:not(.on) .p0 { transform: translateX(-40%); }
+  .final:not(.on) .p1 { transform: translateX(40%); }
+  .merged .final .ve { opacity: 1; }
   .intro { color: var(--muted); max-width: 46ch; margin: 0 0 28px; }
   .cta { display: flex; gap: 12px; flex-wrap: wrap; }
   .btn {

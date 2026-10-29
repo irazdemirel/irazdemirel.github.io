@@ -19,11 +19,11 @@ const path = Astro.url.pathname;
   .logo { text-decoration: none; font-family: var(--font-display); font-weight: 300; font-size: 18px; letter-spacing: -0.01em; white-space: nowrap; }
   .logo b { font-weight: 700; }
   /* Kumo: küçük, sütunlar halinde nav */
-  nav { display: grid; grid-template-columns: repeat(4, auto); column-gap: 28px; }
+  nav { display: grid; grid-template-columns: repeat(5, auto); column-gap: 28px; }
   nav a { text-decoration: none; color: var(--text); }
   nav a:hover, nav a[aria-current='page'] { text-decoration: underline; text-underline-offset: 4px; }
   @media (max-width: 560px) {
-    nav { grid-template-columns: repeat(2, auto); column-gap: 16px; row-gap: 2px; }
+    nav { grid-template-columns: repeat(3, auto); column-gap: 14px; row-gap: 2px; }
     nav a { font-size: 11px; }
   }
 </style>

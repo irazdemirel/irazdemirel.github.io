@@ -1,8 +1,7 @@
 ---
 // Numaralı blog listesi (referans: Kumo'daki 01/02/03 listesi)
-import type { CollectionEntry } from 'astro:content';
-import { fmtDate } from '../data/content';
-interface Props { posts: CollectionEntry<'blog'>[]; }
+import { fmtDate, type Post } from '../data/content';
+interface Props { posts: Post[]; }
 const { posts } = Astro.props;
 ---
 {posts.length === 0 ? (
@@ -11,11 +10,11 @@ const { posts } = Astro.props;
   <ol class="list">
     {posts.map((p, i) => (
       <li class="reveal">
-        <a href={`/blog/${p.id}/`}>
+        <a href={p.href} target={p.external ? '_blank' : undefined} rel={p.external ? 'noopener' : undefined}>
           <span class="label n">{String(i + 1).padStart(2, '0')}</span>
-          <span class="t">{p.data.title}{p.data.draft && <em class="label"> taslak</em>}</span>
-          <span class="label tag">{p.data.tag}</span>
-          <span class="label d">{fmtDate(p.data.date)}</span>
+          <span class="t">{p.title}{p.external && <span class="ext" aria-label="Medium'da açılır"> ↗</span>}{p.draft && <em class="label"> taslak</em>}</span>
+          <span class="label tag">{p.external ? `${p.tag === 'medium' ? '' : p.tag + ' · '}medium` : p.tag}</span>
+          <span class="label d">{fmtDate(p.date)}</span>
         </a>
       </li>
     ))}
@@ -32,6 +31,7 @@ const { posts } = Astro.props;
   a:hover .t { text-decoration: underline; text-underline-offset: 4px; }
   .d { text-align: right; }
   em { font-style: normal; }
+  .ext { color: var(--muted); font-weight: 400; }
   @media (max-width: 640px) {
     a { grid-template-columns: 32px 1fr; row-gap: 4px; }
     .tag, .d { grid-column: 2; text-align: left; }

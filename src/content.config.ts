@@ -12,6 +12,10 @@ const blog = defineCollection({
     tag: z.string(),
     draft: z.boolean().default(false),
     medium: z.string().url().optional(),
+    // Kültür sayfası için (kitap/film/dizi/tiyatro/konser yazılarında):
+    creator: z.string().optional(), // yazar, yönetmen, sanatçı
+    cover: z.string().optional(), // public/ altındaki kapak/afiş görseli
+    color: z.string().optional(), // kitap sırtı / afiş rengi (ör. "#3b5b4f")
   }),
 });
 

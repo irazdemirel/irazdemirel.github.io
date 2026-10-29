@@ -23,11 +23,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://open.spotify.com" />
   </head>
   <body>
     <Header />
     <main><slot /></main>
     <Footer />
+    <script>
+      import { initMotion } from '../scripts/motion';
+      initMotion();
+    </script>
     <script>
       // Başlıkları harflere böl + kaydırınca belirt
       document.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {

@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *' # her gün 06:17 (TR) — yeni Medium yazılarını çeker
 
 permissions:
   contents: read

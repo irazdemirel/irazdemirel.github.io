@@ -1,0 +1,99 @@
+---
+// Spotify playlistleri plak olarak. Tıkla → plak pikaba geçer ve döner, playlist çalar.
+import { plaklar } from '../data/plaklar';
+const list = plaklar.filter((p) => import.meta.env.DEV || !p.draft);
+const embed = (url?: string) => {
+  const m = url?.match(/open\.spotify\.com\/(?:intl-\w+\/)?(playlist|album)\/([A-Za-z0-9]+)/);
+  return m ? `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator&theme=0` : '';
+};
+const items = list.map((p, i) => ({ ...p, embed: embed(p.spotify), color: p.color ?? `var(--spine-${(i % 5) + 1})`, ink: p.color ? '#fff' : `var(--ink-${(i % 5) + 1})` }));
+---
+{items.length === 0 ? <p class="empty">Plaklar yakında.</p> : (
+  <div class="records" data-records>
+    <ul class="crate">
+      {items.map((p, i) => (
+        <li>
+          <button class="sleeve" style={`--c:${p.color};--ink:${p.ink}`} data-i={i} aria-pressed="false" aria-label={`${p.title} plağını çal`}>
+            <span class="disc" aria-hidden="true"><span class="lbl" /></span>
+            <span class="cover"><b>{p.title}</b>{p.draft && <em>örnek</em>}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+
+    <div class="deck" hidden>
+      <div class="turntable" aria-hidden="true">
+        <div class="platter"><span class="disc big"><span class="lbl" /></span></div>
+        <div class="arm" />
+      </div>
+      <div class="now">
+        <span class="label">Şimdi çalıyor</span>
+        <h3 class="np-title"></h3>
+        <p class="np-note"></p>
+        <div class="player"></div>
+      </div>
+    </div>
+    <script type="application/json" class="data" set:html={JSON.stringify(items.map(({ title, note, embed, color }) => ({ title, note, embed, color })))} />
+  </div>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-records]').forEach((root) => {
+    const data = JSON.parse(root.querySelector('.data')!.textContent || '[]');
+    const deck = root.querySelector<HTMLElement>('.deck')!;
+    const big = deck.querySelector<HTMLElement>('.disc.big')!;
+    const sleeves = [...root.querySelectorAll<HTMLButtonElement>('.sleeve')];
+    sleeves.forEach((b) => b.addEventListener('click', () => {
+      const d = data[Number(b.dataset.i)];
+      sleeves.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      deck.hidden = false;
+      deck.classList.remove('spin'); void deck.offsetWidth; deck.classList.add('spin');
+      big.style.setProperty('--c', d.color);
+      deck.querySelector('.np-title')!.textContent = d.title;
+      deck.querySelector('.np-note')!.textContent = d.note || '';
+      deck.querySelector('.player')!.innerHTML = d.embed
+        ? `<iframe src="${d.embed}" width="100%" height="152" frameborder="0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="Spotify: ${d.title.replace(/"/g, '')}"></iframe>`
+        : '<p class="label">Spotify linki eklenince burada çalar.</p>';
+      deck.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }));
+  });
+</script>
+
+<style>
+  .crate { list-style: none; margin: 0; padding: 12px 0 8px; display: flex; gap: 28px; overflow-x: auto; overflow-y: hidden; }
+  .sleeve { all: unset; cursor: pointer; position: relative; display: block; width: 200px; height: 200px; margin-right: 50px; }
+  .sleeve:focus-visible .cover { outline: 2px solid var(--text); outline-offset: 3px; }
+  .cover {
+    position: absolute; inset: 0; z-index: 2; border-radius: 4px; padding: 16px;
+    background: var(--c); color: var(--ink); display: flex; flex-direction: column; justify-content: flex-end;
+    box-shadow: 0 14px 24px -14px rgba(0,0,0,.5);
+    background-image: linear-gradient(135deg, rgba(255,255,255,.12), transparent 60%);
+  }
+  .cover b { font-family: var(--font-display); font-size: 20px; line-height: 1.1; }
+  .cover em { font-style: normal; font-family: var(--font-mono); font-size: 10px; opacity: .7; margin-top: 4px; }
+  .disc {
+    position: absolute; z-index: 1; top: 6px; left: 6px; width: 188px; height: 188px; border-radius: 50%;
+    background: repeating-radial-gradient(circle, #111 0 2px, #1c1c1c 2px 4px);
+    box-shadow: inset 0 0 0 2px #000; transition: transform .5s cubic-bezier(.2,.8,.2,1);
+    display: grid; place-items: center;
+  }
+  .lbl { width: 34%; height: 34%; border-radius: 50%; background: var(--c, #888); box-shadow: 0 0 0 4px rgba(0,0,0,.4); position: relative; }
+  .lbl::after { content: ''; position: absolute; inset: 44%; border-radius: 50%; background: var(--bg); }
+  .sleeve:hover .disc, .sleeve[aria-pressed='true'] .disc { transform: translateX(46%) rotate(40deg); }
+
+  .deck { margin-top: 40px; display: grid; grid-template-columns: minmax(220px, 320px) 1fr; gap: 40px; align-items: center; padding: 28px; border-radius: var(--radius); background: var(--surface); }
+  .deck[hidden] { display: none; }
+  .turntable { position: relative; aspect-ratio: 1.15; background: color-mix(in srgb, var(--text) 85%, var(--bg)); border-radius: 14px; padding: 8%; }
+  .platter { width: 80%; aspect-ratio: 1; border-radius: 50%; background: #0a0a0a; display: grid; place-items: center; }
+  .disc.big { position: static; width: 96%; height: 96%; }
+  .spin .disc.big { animation: spin 1.8s linear infinite; }
+  .arm { position: absolute; top: 10%; right: 9%; width: 6px; height: 62%; background: #bbb; border-radius: 3px; transform-origin: top center; transform: rotate(8deg); transition: transform .8s; }
+  .arm::before { content: ''; position: absolute; top: -8px; left: -7px; width: 20px; height: 20px; border-radius: 50%; background: #999; }
+  .spin .arm { transform: rotate(26deg); }
+  .now h3 { font-family: var(--font-display); font-size: clamp(24px, 3vw, 36px); margin: 6px 0; letter-spacing: -0.02em; }
+  .now p { color: var(--muted); margin: 0 0 16px; }
+  .player :global(iframe) { border-radius: 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (max-width: 700px) { .deck { grid-template-columns: 1fr; } .turntable { max-width: 260px; } }
+  @media (prefers-reduced-motion: reduce) { .spin .disc.big { animation: none; } .disc { transition: none; } }
+</style>

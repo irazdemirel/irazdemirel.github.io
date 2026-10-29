@@ -25,7 +25,7 @@ const contacts = [
   <section class="statement section">
     <div class="wrap grid">
       <p class="small reveal">{site.statement.small}</p>
-      <h2 class="big reveal">{site.statement.big.map((s) => <span>{s}</span>)}</h2>
+      <h2 class="big reveal">{site.statement.big.map((s, i) => <span data-slide={i % 2 ? 'right' : 'left'}>{s}</span>)}</h2>
     </div>
   </section>
 
@@ -79,7 +79,8 @@ const contacts = [
     font-family: var(--font-display); font-weight: 600;
     font-size: clamp(48px, 10vw, 140px); line-height: 0.92; letter-spacing: -0.04em;
   }
-  .big span { display: block; }
+  .big span { display: block; will-change: transform; white-space: nowrap; }
+  .statement { overflow: hidden; }
   .big span:last-child { font-weight: 300; }
   .head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
   .head a { text-decoration: none; white-space: nowrap; }

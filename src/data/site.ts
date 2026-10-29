@@ -5,7 +5,7 @@ export const site = {
   description:
     'Deep learning ve siber güvenliği sıfırdan öğrenirken yaptığım projeler, notlar ve kitap/dizi/film/tiyatro/konser yazıları.',
   // Hero'da dönen kelimeler: "Sıfırdan ___ öğreniyorum"
-  learning: ['deep learning', 'siber güvenlik', 'yazılım testi'],
+  learning: ['deep learning', 'siber güvenlik'], // sırayla döner, sonra birleşir
   intro:
     'Yazılım sektöründe çalışıyorum. Öğrendiklerimi, projelerimi ve izlediğim, okuduğum, dinlediğim şeyleri burada yazıyorum.',
   statement: {
@@ -37,6 +37,7 @@ export const site = {
 export const nav = [
   { href: '/projeler/', label: 'Projeler' },
   { href: '/blog/', label: 'Blog' },
+  { href: '/kultur/', label: 'Kültür' },
   { href: '/#hakkimda', label: 'Hakkımda' },
   { href: '/#iletisim', label: 'İletişim' },
 ];
