@@ -30,7 +30,7 @@ export const site = {
   },
   // Avatar kareleri: public/avatar/frame-01.webp, frame-02.webp ... (bkz. README)
   avatar: {
-    frames: 0, // 0 = video kareleri yok → `image` imlece doğru eğilir
+    frames: 31, // PixVerse videosundan: 01 = sola bakış … 16 = karşı … 31 = sağa bakış
     image: '/avatar/avatar.webp', // tek görsel (kareler gelene kadar)
     pattern: '/avatar/frame-{n}.webp',
     alt: 'Iraz’ın avatarı',
