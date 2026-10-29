@@ -43,29 +43,22 @@ const mid = srcs[Math.floor(frames / 2)];
 </div>
 
 <script>
+  // Tek rAF döngüsü + yaylı yumuşatma: kare (bakış), eğilme, mıknatıs kayması ve parlama birlikte hareket eder.
+  // Sonuç --mx / --my (-1..1) olarak .avatar'a yazılır; CSS ve 3D halka (HeroRing) bunları okur.
   document.querySelectorAll<HTMLElement>('.avatar').forEach((root) => {
     const srcs: string[] = JSON.parse(root.dataset.frames || '[]');
     const poses = [...root.querySelectorAll<HTMLImageElement>('.pose')];
     const img = poses.length ? null : root.querySelector('img');
     const eyes = root.querySelector<SVGGElement>('.eyes');
-    const tilt = root.querySelector<HTMLElement>('.tilt');
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const touch = matchMedia('(hover: none)').matches;
 
     // Kareler: bir kez belleğe çözülür (ImageBitmap), sonra canvas'a çizilir.
     // <img src> değiştirmek her karede yeniden çözme = takılma yapıyordu.
+    // Açılışı yavaşlatmasın: sayfa yüklendikten hemen sonra (ya da ilk fare hareketinde) iner.
     let bitmaps: ImageBitmap[] = [];
     let ctx: CanvasRenderingContext2D | null = null;
-    let target = (srcs.length - 1) / 2, cur = target, drawn = -1, loop = 0;
-    const draw = () => {
-      cur += (target - cur) * 0.18; // kareler arası yumuşak geçiş
-      const f = Math.round(cur);
-      if (ctx && f !== drawn) { ctx.drawImage(bitmaps[f], 0, 0, ctx.canvas.width, ctx.canvas.height); drawn = f; }
-      loop = Math.abs(target - cur) > 0.05 ? requestAnimationFrame(draw) : 0;
-    };
-    // Kareler sayfa açılışını yavaşlatmasın: ilk etkileşimde ya da yüklendikten 3 sn sonra indirilir.
-    // O zamana kadar ortadaki kare <img> olarak durur.
-    let started = false;
+    let started = false, drawn = -1;
     const loadFrames = () => {
       if (started || !img || !srcs.length || !('createImageBitmap' in window)) return;
       started = true;
@@ -79,14 +72,13 @@ const mid = srcs[Math.floor(frames / 2)];
           c.setAttribute('aria-label', img.alt);
           ctx = c.getContext('2d');
           img.replaceWith(c);
-          drawn = -1; draw();
+          drawn = -1; kick(true);
         })
-        .catch(() => {}); // olmazsa <img> yöntemiyle devam
+        .catch(() => {}); // olmazsa tek kare kalır, eğilme yine çalışır
     };
-    ['pointermove', 'touchstart', 'scroll', 'keydown'].forEach((ev) =>
-      window.addEventListener(ev, loadFrames, { once: true, passive: true }));
-    const later = () => setTimeout(loadFrames, 3000);
-    if (document.readyState === 'complete') later(); else window.addEventListener('load', later, { once: true });
+    window.addEventListener('pointermove', loadFrames, { once: true, passive: true });
+    const soon = () => setTimeout(loadFrames, 600);
+    if (document.readyState === 'complete') soon(); else window.addEventListener('load', soon, { once: true });
 
     // 3 poz: 0 = sol, 1 = orta, 2 = sağ. Sınırda titremesin diye küçük pay (hysteresis).
     let pose = 1;
@@ -102,77 +94,106 @@ const mid = srcs[Math.floor(frames / 2)];
       return t < 1 / 3 - pad ? 0 : t > 2 / 3 + pad ? 2 : 1;
     };
 
-    let raf = 0;
-    let y = window.innerHeight / 2;
-    const update = (x: number) => {
-      const t = Math.min(1, Math.max(0, x / window.innerWidth)); // 0 = sol, 1 = sağ
-      if (poses.length) setPose(poseFor(t));
+    // hedef (tx, ty) → şu anki (x, y); kare başına üstel yaklaşma, ekran tazeleme hızından bağımsız
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0, last = 0;
+    const frame = (now: number) => {
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
+      last = now;
+      const k = 1 - Math.exp(-dt * 11);
+      x += (tx - x) * k; y += (ty - y) * k;
+      const t = (x + 1) / 2; // 0 = sol, 1 = sağ
       if (ctx) {
-        target = t * (srcs.length - 1);
-        if (!loop) loop = requestAnimationFrame(draw);
-      } else if (img && srcs.length) {
-        const src = srcs[Math.round(t * (srcs.length - 1))];
-        if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+        const f = Math.round(t * (bitmaps.length - 1));
+        if (f !== drawn) { ctx.drawImage(bitmaps[f], 0, 0, ctx.canvas.width, ctx.canvas.height); drawn = f; }
       }
-      if (tilt) {
-        // imlece doğru hafif 3D dönüş (kare/poz varsa daha az)
-        tilt.style.setProperty('--rx', `${((y / window.innerHeight) - 0.5) * -10}deg`);
-        tilt.style.setProperty('--ry', `${(t - 0.5) * (srcs.length || poses.length ? 8 : 22)}deg`);
-        tilt.style.setProperty('--sx', `${t * 100}%`);
-      } else if (eyes) {
-        eyes.style.transform = `translateX(${(t - 0.5) * 12}px)`;
-      }
+      if (poses.length) setPose(poseFor(t));
+      if (eyes) eyes.style.transform = `translateX(${x * 6}px)`;
+      root.style.setProperty('--mx', x.toFixed(4));
+      root.style.setProperty('--my', y.toFixed(4));
+      if (Math.abs(tx - x) + Math.abs(ty - y) > 0.001) raf = requestAnimationFrame(frame);
+      else { raf = 0; last = 0; }
     };
+    const kick = (force = false) => {
+      if (force) drawn = -1;
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+    const clamp = (v: number) => Math.max(-1, Math.min(1, v));
+    // İmleç avatarın merkezine göre: yanında küçük bir hareket bile başı çevirir,
+    // ~1.2 avatar genişliği uzakta tam yana bakar.
+    const aim = (cx: number, cy: number) => {
+      const r = root.getBoundingClientRect();
+      const s = Math.max(r.width * 1.2, 280);
+      tx = clamp((cx - (r.left + r.width / 2)) / s);
+      ty = clamp((cy - (r.top + r.height / 2)) / s);
+      kick();
+    };
+    const center = () => { tx = 0; ty = 0; kick(); };
+
     if (!touch) {
-      window.addEventListener('pointermove', (e) => {
-        cancelAnimationFrame(raf);
-        y = e.clientY;
-        raf = requestAnimationFrame(() => update(e.clientX));
-      }, { passive: true });
-      document.addEventListener('pointerleave', () => update(window.innerWidth / 2));
+      window.addEventListener('pointermove', (e) => aim(e.clientX, e.clientY), { passive: true });
+      document.documentElement.addEventListener('pointerleave', center);
     } else if (poses.length) {
       // Dokunmatik: orta pozda durur; ekranın bir yanına dokununca 2 sn o yöne bakar
       let back = 0;
       window.addEventListener('pointerdown', (e) => {
-        update(e.clientX);
+        aim(e.clientX, e.clientY);
         clearTimeout(back);
-        back = window.setTimeout(() => update(window.innerWidth / 2), 2000);
+        back = window.setTimeout(center, 2000);
       }, { passive: true });
     } else if (srcs.length) {
-      // Dokunmatik + kareler: avatar arada bir yavaşça etrafına bakar
-      let start = 0;
-      const loop = (ts: number) => {
+      // Dokunmatik + kareler: avatar arada bir yavaşça etrafına bakar (sadece ekrandayken)
+      let on = false, start = 0;
+      const idle = (ts: number) => {
+        if (!on) return;
         if (!start) start = ts;
         const p = ((ts - start) / 7000) % 1; // 7 sn'lik döngü
-        const t = p < 0.6 ? 0.5 : 0.5 + 0.45 * Math.sin(((p - 0.6) / 0.4) * Math.PI * 2);
-        update(t * window.innerWidth);
-        requestAnimationFrame(loop);
+        tx = p < 0.6 ? 0 : 0.9 * Math.sin(((p - 0.6) / 0.4) * Math.PI * 2);
+        ty = p < 0.6 ? 0 : -0.15 * Math.sin(((p - 0.6) / 0.4) * Math.PI);
+        kick();
+        requestAnimationFrame(idle);
       };
-      requestAnimationFrame(loop);
+      new IntersectionObserver(([en]) => {
+        on = en.isIntersecting;
+        if (on) { start = 0; requestAnimationFrame(idle); }
+      }).observe(root);
     }
   });
 </script>
 
 <style>
-  .avatar { aspect-ratio: 1; width: 100%; max-width: 520px; margin-inline: auto; }
+  .avatar { --mx: 0; --my: 0; aspect-ratio: 1; width: 100%; max-width: 520px; margin-inline: auto; }
   .avatar img { width: 100%; height: 100%; object-fit: contain; }
   .avatar { perspective: 900px; position: relative; animation: suzul 6s ease-in-out infinite; }
   @keyframes suzul { 50% { transform: translateY(-10px); } }
 
+  /* Disk: imlece doğru birkaç px kayar ve hafifçe eğilir (geçiş yok: değerleri JS yay ile yumuşatıyor) */
   .tilt {
     position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
     box-shadow: var(--shadow), 0 0 0 10px var(--accent-soft);
-    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-    transition: transform .35s cubic-bezier(.2,.8,.2,1);
+    transform:
+      translate3d(calc(var(--mx) * 12px), calc(var(--my) * 10px), 0)
+      rotateX(calc(var(--my) * -7deg)) rotateY(calc(var(--mx) * 9deg));
     will-change: transform;
+    transition: scale .6s cubic-bezier(.16,1,.3,1);
+    animation: belir .9s cubic-bezier(.16,1,.3,1) backwards; /* bitince scale'i bırakır (hover çalışsın) */
   }
+  /* Açılış: disk yumuşakça büyüyerek belirir */
+  @keyframes belir { from { opacity: 0; scale: .88; } }
+  .avatar:hover .tilt { scale: 1.03; }
   .tilt .still { object-fit: cover; transform: scale(1.06); }
   /* canvas JS ile eklenir, scoped stil almaz → :global */
   .tilt :global(canvas.still) { display: block; width: 100%; height: 100%; transform: scale(1.06); }
   /* 3 poz üst üste; görünen poz yumuşakça belirir */
   .pose { position: absolute; inset: 0; object-fit: cover; opacity: 0; transition: opacity .35s ease; }
   .pose.on { opacity: 1; }
-  .shine { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at var(--sx, 50%) 20%, rgba(255,255,255,.14), transparent 55%); }
+  /* Parlama: imleci izleyen yumuşak ışık lekesi (sadece transform) */
+  .shine {
+    position: absolute; inset: -50%; pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.26), rgba(255,255,255,.08) 22%, transparent 40%);
+    transform: translate(calc(var(--mx) * 22%), calc(var(--my) * 22% - 14%));
+    opacity: .75; transition: opacity .6s;
+  }
+  .avatar:hover .shine { opacity: 1; }
   .placeholder {
     width: 100%; height: 100%;
     border-radius: 50%;
@@ -180,10 +201,12 @@ const mid = srcs[Math.floor(frames / 2)];
     display: grid; place-items: center; position: relative; overflow: hidden;
   }
   .placeholder svg { width: 70%; fill: var(--line); }
-  .placeholder .eyes { fill: var(--muted); transition: transform 0.25s ease-out; }
+  .placeholder .eyes { fill: var(--muted); }
   .placeholder .label { position: absolute; bottom: 12%; }
   @media (prefers-reduced-motion: reduce) {
-    .avatar { animation: none; }
+    .avatar, .tilt { animation: none; }
+    .tilt { transition: none; }
+    .avatar:hover .tilt { scale: none; }
     .pose { transition: none; }
   }
 </style>
