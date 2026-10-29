@@ -1,0 +1,68 @@
+---
+// Tasarım afiş: başlık tipografisi + yapıma özel motif (gerçek afiş yerine)
+import type { Motif } from '../data/kultur';
+interface Props { title: string; creator?: string; credit?: string; poster: { bg: string; fg: string; accent: string; motif: Motif }; }
+const { title, creator, credit, poster } = Astro.props;
+const { bg, fg, accent, motif } = poster;
+---
+<span class="ps" style={`--bg:${bg};--fg:${fg};--ac:${accent}`}>
+  <svg class="motif" viewBox="0 0 200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    {motif === 'dune' && <>
+      <circle cx="132" cy="96" r="38" fill={accent} opacity=".95" />
+      <path d="M0 190 Q60 150 120 185 T200 175 V300 H0Z" fill={fg} opacity=".18" />
+      <path d="M0 220 Q70 180 140 215 T200 210 V300 H0Z" fill={accent} opacity=".45" />
+      <path d="M0 250 Q50 228 110 248 T200 242 V300 H0Z" fill="#000" opacity=".35" />
+      <path d="M70 205 l3 -12 3 12z" fill="#000" opacity=".6" />
+    </>}
+    {motif === 'rings' && <>
+      {[90, 70, 52, 36, 22].map((r, i) => <circle cx="100" cy="120" r={r} fill="none" stroke={accent} stroke-width={i === 4 ? 6 : 1.5} opacity={0.25 + i * 0.15} />)}
+      <circle cx="100" cy="120" r="9" fill={accent} />
+      <path d="M100 0 V300" stroke={accent} stroke-width=".6" opacity=".35" />
+    </>}
+    {motif === 'ruins' && <>
+      <path d="M0 210 H200" stroke={accent} stroke-width="1" opacity=".5" />
+      {[26, 52, 78, 104, 130, 156].map((x, i) => <rect x={x} y={120 + (i % 3) * 18} width="12" height={90 - (i % 3) * 18} fill={fg} opacity={i === 2 ? 0 : 0.22} />)}
+      <rect x="20" y="112" width="128" height="8" fill={fg} opacity=".22" />
+      <circle cx="160" cy="70" r="16" fill={accent} opacity=".8" />
+      <path d="M0 230 Q100 222 200 232 V300 H0Z" fill="#000" opacity=".3" />
+    </>}
+    {motif === 'windmill' && <>
+      <circle cx="150" cy="70" r="26" fill={accent} opacity=".85" />
+      <path d="M0 230 Q100 205 200 228 V300 H0Z" fill="#000" opacity=".35" />
+      <path d="M88 228 L96 140 H112 L120 228Z" fill={fg} opacity=".9" />
+      <path d="M92 140 L104 124 L116 140Z" fill={fg} opacity=".9" />
+      <g transform="translate(104 136) rotate(20)" stroke={fg} stroke-width="3" opacity=".9">
+        <path d="M0 0 V-58 M0 0 V58 M0 0 H-58 M0 0 H58" />
+      </g>
+      <g transform="translate(104 136) rotate(20)" fill={fg} opacity=".55">
+        <rect x="2" y="-56" width="12" height="44" /><rect x="-14" y="12" width="12" height="44" />
+        <rect x="12" y="2" width="44" height="12" /><rect x="-56" y="-14" width="44" height="12" />
+      </g>
+      <path d="M40 228 l6 -18 4 6 4 -10 4 22z" fill="#000" opacity=".55" />
+    </>}
+    {motif === 'notes' && <>
+      {[90, 102, 114, 126, 138].map((y) => <path d={`M0 ${y} H200`} stroke={accent} stroke-width="1" opacity=".55" />)}
+      <g fill={accent}>
+        <ellipse cx="50" cy="132" rx="8" ry="6" transform="rotate(-20 50 132)" /><rect x="56" y="88" width="2.4" height="44" />
+        <ellipse cx="96" cy="114" rx="8" ry="6" transform="rotate(-20 96 114)" /><rect x="102" y="70" width="2.4" height="44" />
+        <ellipse cx="142" cy="102" rx="8" ry="6" transform="rotate(-20 142 102)" /><rect x="148" y="58" width="2.4" height="44" />
+        <path d="M58 88 L104 70 L150 58 L150 64 L104 76 L58 94Z" />
+      </g>
+      <path d="M100 170 q-30 30 0 60 q30 -30 0 -60" fill="none" stroke={fg} stroke-width="1.2" opacity=".4" />
+    </>}
+  </svg>
+  <span class="txt">
+    <b>{title}</b>
+    {creator && <span class="cr">{creator}</span>}
+    {credit && <span class="cd">{credit}</span>}
+  </span>
+</span>
+
+<style>
+  .ps { position: absolute; inset: 0; display: block; border-radius: inherit; background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--bg) 70%, var(--ac)) 0%, var(--bg) 60%); color: var(--fg); overflow: hidden; }
+  .motif { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .txt { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 10px 12px; display: flex; flex-direction: column; gap: 2px; background: linear-gradient(transparent, rgba(0,0,0,.55)); }
+  b { font-family: var(--font-display); font-weight: 800; font-size: 21px; line-height: 1; letter-spacing: -0.01em; }
+  .cr { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .02em; opacity: .85; }
+  .cd { font-size: 8.5px; line-height: 1.25; opacity: .7; }
+</style>

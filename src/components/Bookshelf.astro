@@ -25,12 +25,13 @@ const spines = books.map((b) => {
             <a class="book" href={b.href} target={b.external ? '_blank' : undefined} rel={b.external ? 'noopener' : undefined} title={`${b.title}${b.creator ? ' — ' + b.creator : ''}`}>
               <span class="title">{b.title}</span>
               {b.creator && <span class="author">{b.creator}</span>}
+              {b.cover && <span class="tip" aria-hidden="true"><img src={b.cover} alt="" loading="lazy" /><span>Yazıyı oku</span></span>}
             </a>
           ) : (
             <button type="button" class="book soon" aria-label={`${b.title}${b.creator ? ', ' + b.creator : ''} — yazısı yakında`}>
               <span class="title">{b.title}</span>
               {b.creator && <span class="author">{b.creator}</span>}
-              <span class="tip" aria-hidden="true">Yazısı yakında</span>
+              <span class="tip" aria-hidden="true">{b.cover && <img src={b.cover} alt="" loading="lazy" />}<span>Yazısı yakında</span></span>
             </button>
           )}
         </li>
@@ -46,7 +47,7 @@ const spines = books.map((b) => {
   .inner { min-width: max-content; }
   .shelf {
     list-style: none; margin: 0; padding: 0 24px;
-    height: 340px; padding-top: 44px; box-sizing: content-box; display: flex; align-items: flex-end; gap: 4px; min-width: max-content;
+    height: 340px; padding-top: 24px; padding-right: 160px; box-sizing: content-box; display: flex; align-items: flex-end; gap: 4px; min-width: max-content;
   }
   .shelf li { height: var(--h); width: var(--w); }
   .book {
@@ -66,15 +67,20 @@ const spines = books.map((b) => {
   .book:hover, .book:focus-visible { transform: translateY(-18px) rotate(-2deg); box-shadow: 0 18px 24px -12px rgba(0,0,0,.4); outline: none; }
   .title, .author { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .title { font-family: var(--font-display); font-weight: 600; font-size: 15px; max-height: 74%; }
-  .author { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .75; max-height: 22%; }
+  .author { font-family: var(--font-mono); font-size: 10px; letter-spacing: .02em; opacity: .8; max-height: 24%; }
   .book.soon { cursor: default; }
   .tip {
-    position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(4px);
+    position: absolute; bottom: 14%; left: calc(100% + 10px); z-index: 5; transform: translateX(-6px) rotate(-2deg);
+    display: flex; flex-direction: column; gap: 6px; align-items: center;
     white-space: nowrap; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em;
-    background: var(--text); color: var(--bg); padding: 5px 9px; border-radius: 6px;
+    background: var(--text); color: var(--bg); padding: 6px; border-radius: 8px;
     opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s;
+    box-shadow: 0 18px 30px -12px rgba(0,0,0,.5);
   }
-  .book.soon:hover .tip, .book.soon:focus-visible .tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .tip img { width: 120px; border-radius: 4px; display: block; }
+  .tip span { padding: 0 4px 2px; }
+  .book:hover .tip, .book:focus-visible .tip { opacity: 1; transform: translateX(0) rotate(0); }
+  .shelf li:hover { z-index: 5; position: relative; }
   .bookend { width: 14px !important; height: 46% !important; background: var(--wood); border-radius: 2px 8px 0 0; opacity: .7; }
   .board { height: 16px; background: var(--wood); border-radius: 2px; box-shadow: 0 10px 18px -10px rgba(0,0,0,.45); }
   @media (prefers-reduced-motion: reduce) { .book { transition: none; } }

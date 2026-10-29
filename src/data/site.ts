@@ -37,7 +37,7 @@ export const site = {
 export const nav = [
   { href: '/projeler/', label: 'Projeler' },
   { href: '/blog/', label: 'Blog' },
-  { href: '/kultur/', label: 'Kültür' },
+  { href: '/kultur/', label: 'Kültürleniyorum' },
   { href: '/#hakkimda', label: 'Hakkımda' },
   { href: '/#iletisim', label: 'İletişim' },
 ];

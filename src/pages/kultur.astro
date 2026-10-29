@@ -9,24 +9,24 @@ const items = await getCulture();
 const books = items.filter((p) => p.tag === 'kitap');
 const watched = items.filter((p) => ['film', 'dizi', 'tiyatro', 'konser'].includes(p.tag));
 ---
-<Base title="Kültür" description="Okuduğum kitaplar, izlediğim filmler, diziler, oyunlar, gittiğim konserler ve dinlediğim playlistler.">
+<Base title="Kültürleniyorum" description="Okuduğum kitaplar, izlediğim filmler, diziler, oyunlar, gittiğim konserler ve dinlediğim playlistler.">
   <section class="section wrap">
-    <h1 class="section-title" data-split>Kültür</h1>
+    <h1 class="section-title" data-split>Kültürleniyorum</h1>
     <p class="lede">Okuduklarım, izlediklerim, dinlediklerim. Birine tıkla, yazısı açılsın; yazısı henüz yoksa yakında.</p>
   </section>
 
   <section class="wrap block" id="kitaplik">
-    <div class="head"><h2 class="sub" data-split>Kitaplık</h2><span class="label">{books.length} kitap</span></div>
+    <div class="head"><h2 class="sub" data-split>Okuyorum</h2><span class="label">{books.length} kitap</span></div>
     <Bookshelf books={books} />
   </section>
 
   <section class="wrap block" id="izlediklerim">
-    <div class="head"><h2 class="sub" data-split>İzlediklerim</h2><span class="label">{watched.length} yapım</span></div>
+    <div class="head"><h2 class="sub" data-split>İzliyorum</h2><span class="label">{watched.length} yapım</span></div>
     <Scenes items={watched} />
   </section>
 
   <section class="wrap block" id="plaklar">
-    <div class="head"><h2 class="sub" data-split>Plaklar</h2><span class="label">Spotify playlistlerim</span></div>
+    <div class="head"><h2 class="sub" data-split>Dinliyorum</h2><span class="label">Spotify playlistlerim</span></div>
     <Records />
   </section>
 </Base>

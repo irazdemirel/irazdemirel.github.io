@@ -23,7 +23,7 @@ const path = Astro.url.pathname;
   nav a { text-decoration: none; color: var(--text); }
   nav a:hover, nav a[aria-current='page'] { text-decoration: underline; text-underline-offset: 4px; }
   @media (max-width: 560px) {
-    nav { grid-template-columns: repeat(3, auto); column-gap: 14px; row-gap: 2px; }
+    nav { grid-template-columns: repeat(3, auto); column-gap: 12px; row-gap: 2px; justify-items: end; }
     nav a { font-size: 11px; }
   }
 </style>

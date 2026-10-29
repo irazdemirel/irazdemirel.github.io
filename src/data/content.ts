@@ -1,6 +1,6 @@
 import { getCollection } from 'astro:content';
 import { getMediumPosts, mediumTag } from './medium';
-import { kultur, type Parca } from './kultur';
+import { kultur, type Parca, type KulturItem } from './kultur';
 
 // Taslaklar (draft: true) sadece yerelde (npm run dev) görünür, canlı sitede görünmez.
 const visible = (d: { data: { draft: boolean } }) => import.meta.env.DEV || !d.data.draft;
@@ -48,7 +48,7 @@ export const fmtDate = (d: Date) =>
 
 // Kültür sayfası öğesi: kultur.ts listesi + o türdeki yazılar (listede olmayanlar otomatik eklenir)
 export type CultureItem = {
-  title: string; tag: string; creator?: string; cover?: string; color?: string;
+  title: string; tag: string; creator?: string; credit?: string; cover?: string; color?: string; poster?: KulturItem['poster'];
   href?: string; external?: boolean; parts?: (Parca & { href?: string; external?: boolean })[];
 };
 const isExt = (u?: string) => !!u && /^https?:/.test(u);
@@ -61,7 +61,7 @@ export async function getCulture(): Promise<CultureItem[]> {
     const post = byTitle.get(norm(k.title));
     const href = k.yazi ?? post?.href;
     return {
-      title: k.title, tag: k.tur, creator: k.creator, cover: k.cover ?? post?.cover, color: k.color,
+      title: k.title, tag: k.tur, creator: k.creator, credit: k.credit, cover: k.cover ?? post?.cover, color: k.color, poster: k.poster,
       href, external: k.yazi ? isExt(k.yazi) : post?.external,
       parts: k.parts?.map((pt) => ({ ...pt, href: pt.yazi, external: isExt(pt.yazi) })),
     };

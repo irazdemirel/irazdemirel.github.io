@@ -23,7 +23,7 @@ const items = list.map((p, i) => ({ ...p, img: covers[i], embed: embed(p.spotify
       {items.map((p, i) => (
         <li>
           <button class="sleeve" style={`--c:${p.color};--ink:${p.ink}`} data-i={i} aria-pressed="false" aria-label={`${p.title} plağını çal`}>
-            <span class="disc" aria-hidden="true"><span class="lbl" /></span>
+            <span class:list={['disc', { pic: p.img }]} style={p.img ? `--img:url(${p.img})` : undefined} aria-hidden="true"><span class="lbl" /></span>
             <span class:list={['cover', { hasimg: p.img }]}>
               {p.img && <img src={p.img} alt="" loading="lazy" />}
               <b>{p.title}</b>{p.draft && <em>örnek</em>}
@@ -61,7 +61,8 @@ const items = list.map((p, i) => ({ ...p, img: covers[i], embed: embed(p.spotify
       deck.hidden = false;
       deck.classList.remove('spin'); void deck.offsetWidth; deck.classList.add('spin');
       big.style.setProperty('--c', d.color);
-      big.querySelector<HTMLElement>('.lbl')!.style.backgroundImage = d.img ? `url(${d.img})` : '';
+      big.classList.toggle('pic', !!d.img);
+      big.style.setProperty('--img', d.img ? `url(${d.img})` : 'none');
       deck.querySelector('.np-title')!.textContent = d.title;
       deck.querySelector('.np-note')!.textContent = d.note || '';
       deck.querySelector('.player')!.innerHTML = d.embed
@@ -95,6 +96,16 @@ const items = list.map((p, i) => ({ ...p, img: covers[i], embed: embed(p.spotify
   }
   .lbl { width: 34%; height: 34%; border-radius: 50%; background: var(--c, #888) center / cover; box-shadow: 0 0 0 4px rgba(0,0,0,.4); position: relative; }
   .lbl::after { content: ''; position: absolute; inset: 44%; border-radius: 50%; background: var(--bg); }
+  /* Resimli plak: kapak tüm plağı kaplar, üstünde ince oluklar */
+  .disc.pic {
+    background:
+      radial-gradient(circle, transparent 0 15%, rgba(0,0,0,.25) 15.5%, transparent 16.5%),
+      repeating-radial-gradient(circle, rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,.22), transparent 45%),
+      var(--img) center / cover;
+  }
+  .disc.pic .lbl { width: 9%; height: 9%; background: #d9d9d9; box-shadow: 0 0 0 3px rgba(0,0,0,.35); }
+  .disc.pic .lbl::after { inset: 30%; background: #111; }
   .sleeve:hover .disc, .sleeve[aria-pressed='true'] .disc { transform: translateX(46%) rotate(40deg); }
 
   .deck { margin-top: 40px; display: grid; grid-template-columns: minmax(220px, 320px) 1fr; gap: 40px; align-items: center; padding: 28px; border-radius: var(--radius); background: var(--surface); }
