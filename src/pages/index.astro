@@ -4,6 +4,7 @@ import Hero from '../components/Hero.astro';
 import ProjectStrip from '../components/ProjectStrip.astro';
 import RetroPC from '../components/RetroPC.astro';
 import Aquarium from '../components/Aquarium.astro';
+import Phone from '../components/Phone.astro';
 import Heatmap from '../components/Heatmap.astro';
 import { site } from '../data/site';
 import { getPosts, getProjects } from '../data/content';
@@ -86,7 +87,8 @@ const contacts = [
   <section class="section" id="iletisim">
     <div class="wrap">
       <h2 class="section-title" data-split>İletişim</h2>
-      <!-- Referans 3: basılınca çöken 3D klavye tuşları (oyuncu öğe; sadece burada) -->
+      <div class="contact-grid">
+      <!-- Referans 3: basılınca çöken 3D klavye tuşları -->
       <ul class="keys">
         {contacts.map((c, i) => (
           <li class="reveal" style={`transition-delay:${i * 70}ms`}>
@@ -97,6 +99,8 @@ const contacts = [
           </li>
         ))}
       </ul>
+      <div class="reveal"><Phone href={`mailto:${l.email}`} /></div>
+      </div>
       <script>
         // iOS'ta :active (tuş basılı hali) dokunmada da çalışsın
         document.querySelectorAll('.key').forEach((k) => k.addEventListener('touchstart', () => {}, { passive: true }));
@@ -177,6 +181,7 @@ const contacts = [
   .sub { color: var(--muted); margin: -24px 0 28px; max-width: 52ch; }
   .head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
   .head a { text-decoration: none; white-space: nowrap; }
+  .contact-grid { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; }
   /* Klavye tuşları: üst yüz + altta koyu "kalınlık" gölgesi; basınca tuş iner */
   .keys { list-style: none; margin: 0; padding: 0 0 8px; display: flex; flex-wrap: wrap; gap: 18px 16px; }
   .key {
@@ -204,6 +209,8 @@ const contacts = [
   @media (max-width: 760px) {
     .statement .grid { grid-template-columns: 1fr; gap: 40px; }
     .big { position: static; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .contact-grid > .reveal { order: -1; }
     .keys li { flex: 1 1 140px; }
     .key { min-width: 0; height: 100%; }
   }
