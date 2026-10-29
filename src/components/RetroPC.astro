@@ -1,0 +1,135 @@
+---
+/*
+  "Yazıyorum": pembe retro bilgisayar. Ekranda yazılar terminal tarzında listelenir,
+  altta renkli klavye: tuşlar arada kendi kendine basılır (yazıyormuş gibi), tıklayınca da basılır.
+*/
+import { fmtDate, type Post } from '../data/content';
+interface Props { posts: Post[]; }
+const { posts } = Astro.props;
+// Klavye: 4 sıra, renkler sırayla pastel tonlar
+const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'].map((r) => [...r]);
+---
+<div class="retro">
+  <div class="case">
+    <div class="bezel">
+      <div class="screen" data-lenis-prevent>
+        <p class="prompt">C:\IRAZ\YAZILAR&gt; dir<span class="cursor" aria-hidden="true">▍</span></p>
+        {posts.length === 0 ? (
+          <p class="line muted">0 dosya bulundu · ilk yazı yakında ♡</p>
+        ) : (
+          <ol class="files">
+            {posts.map((p, i) => (
+              <li>
+                <a href={p.href} target={p.external ? '_blank' : undefined} rel={p.external ? 'noopener' : undefined}>
+                  <span class="n">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="t">{p.title}{p.external && <span aria-label="Medium'da açılır"> ↗</span>}{p.draft && <em> (taslak)</em>}</span>
+                  <span class="d">{fmtDate(p.date)}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
+    </div>
+    <div class="front" aria-hidden="true">
+      <span class="floppy"></span>
+      <span class="led"></span>
+    </div>
+  </div>
+  <div class="neck" aria-hidden="true"></div>
+  <div class="keyboard" aria-hidden="true">
+    {rows.map((r, ri) => (
+      <div class="krow">
+        {r.map((k, ki) => <span class="kc" style={`--k:var(--spine-${((ri + ki) % 4) + 1})`}>{k}</span>)}
+      </div>
+    ))}
+    <div class="krow"><span class="kc space" style="--k:var(--accent)">♡</span></div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.retro .keyboard').forEach((kb) => {
+    const keys = [...kb.querySelectorAll<HTMLElement>('.kc')];
+    const press = (k: HTMLElement) => { k.classList.add('down'); setTimeout(() => k.classList.remove('down'), 140); };
+    keys.forEach((k) => k.addEventListener('pointerdown', () => press(k)));
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Görünürken kendi kendine "yazar"
+    let timer = 0;
+    const type = () => { press(keys[Math.floor(Math.random() * keys.length)]); timer = window.setTimeout(type, 180 + Math.random() * 420); };
+    new IntersectionObserver(([e]) => {
+      clearTimeout(timer);
+      if (e.isIntersecting) type();
+    }).observe(kb);
+  });
+</script>
+
+<style>
+  .retro { --pink: #f4c6d3; --pink-d: #e3a3b6; max-width: 640px; margin-inline: auto; }
+  .case {
+    background: linear-gradient(160deg, #fbe0e8, var(--pink) 60%, var(--pink-d));
+    border-radius: 26px 26px 18px 18px; padding: 22px 22px 14px;
+    box-shadow: inset 0 3px 0 rgba(255,255,255,.6), inset 0 -6px 0 rgba(120,60,80,.12), var(--shadow);
+  }
+  .bezel { background: #e9b7c6; border-radius: 16px; padding: 14px; box-shadow: inset 0 4px 10px rgba(120,60,80,.25); }
+  .screen {
+    position: relative; min-height: 220px; max-height: 340px; overflow: auto;
+    border-radius: 12px; padding: 18px 20px;
+    background: radial-gradient(ellipse at 50% 40%, #3a2433, #22161f 75%);
+    color: #ffd6e4; font-family: var(--font-mono); font-size: 14px; line-height: 1.7;
+    box-shadow: inset 0 0 30px rgba(255, 150, 190, .18);
+    text-shadow: 0 0 6px rgba(255, 170, 200, .55);
+  }
+  /* tarama çizgileri */
+  .screen::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px);
+  }
+  .prompt { margin: 0 0 10px; color: #ffb3cb; }
+  .cursor { animation: blink 1s steps(1) infinite; margin-left: 2px; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .line { margin: 0; }
+  .muted { opacity: .75; }
+  .files { list-style: none; margin: 0; padding: 0; }
+  .files a {
+    display: grid; grid-template-columns: 30px 1fr auto; gap: 12px; padding: 4px 6px; border-radius: 6px;
+    color: inherit; text-decoration: none;
+  }
+  .files a:hover, .files a:focus-visible { background: rgba(255, 179, 203, .18); outline: none; }
+  .files a:hover .t::before, .files a:focus-visible .t::before { content: '> '; }
+  .n, .d { opacity: .6; }
+  em { font-style: normal; opacity: .7; }
+  .front { display: flex; justify-content: space-between; align-items: center; padding: 12px 8px 0; }
+  .floppy { width: 34%; height: 7px; border-radius: 4px; background: #d58fa5; box-shadow: inset 0 2px 2px rgba(0,0,0,.2); }
+  .led { width: 9px; height: 9px; border-radius: 50%; background: #9be7b4; box-shadow: 0 0 8px #9be7b4; animation: led 2.6s ease-in-out infinite; }
+  @keyframes led { 50% { opacity: .35; } }
+  .neck { width: 26%; height: 18px; margin-inline: auto; background: var(--pink-d); border-radius: 0 0 10px 10px; }
+  .keyboard {
+    margin: 10px auto 0; width: 94%; padding: 14px; border-radius: 18px;
+    background: linear-gradient(180deg, var(--pink), var(--pink-d));
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 14px 24px -14px rgba(120,60,80,.5);
+    display: grid; gap: 6px;
+  }
+  .krow { display: flex; justify-content: center; gap: 6px; }
+  .kc {
+    flex: 0 1 34px; height: 30px; display: grid; place-items: center; border-radius: 7px;
+    background: var(--k); color: #2a2228; font: 700 11px var(--font-mono);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 4px 0 color-mix(in srgb, var(--k) 65%, #2a2228);
+    transition: transform .07s, box-shadow .07s; cursor: pointer; user-select: none;
+  }
+  .kc.space { flex-basis: 50%; }
+  .kc.down { transform: translateY(3px); box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 1px 0 color-mix(in srgb, var(--k) 65%, #2a2228); }
+  @media (max-width: 560px) {
+    .case { padding: 14px 14px 10px; border-radius: 20px 20px 14px 14px; }
+    .bezel { padding: 10px; }
+    .screen { font-size: 12px; padding: 14px; }
+    .files a { grid-template-columns: 24px 1fr; }
+    .d { grid-column: 2; }
+    .keyboard { padding: 10px; gap: 4px; }
+    .krow { gap: 4px; }
+    .kc { height: 24px; font-size: 9px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cursor, .led { animation: none; }
+    .kc { transition: none; }
+  }
+</style>

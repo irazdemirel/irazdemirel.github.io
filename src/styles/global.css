@@ -13,6 +13,7 @@ body {
   font-size: 17px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip; /* dönen süsler sayfayı yana kaydırmasın */
 }
 img { max-width: 100%; display: block; }
 a { color: inherit; }
