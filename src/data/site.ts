@@ -5,7 +5,7 @@ export const site = {
   description:
     'Deep learning ve siber güvenliği sıfırdan öğrenirken yaptığım projeler, notlar ve kitap/dizi/film/tiyatro/konser yazıları.',
   // Hero'da dönen kelimeler: "Sıfırdan ___ öğreniyorum"
-  learning: ['siber güvenlik', 'deep learning'], // birer kez geçer, sonra "Sıfırdan öğreniyorum" birleşir
+  learning: ['siber güvenlik', 'deep learning', 'Flutter'], // birer kez geçer, sonra "Sıfırdan öğreniyorum" birleşir
   intro:
     'Yazılım sektöründe çalışıyorum. Öğrendiklerimi, projelerimi ve izlediğim, okuduğum, dinlediğim şeyleri burada yazıyorum.',
   statement: {
