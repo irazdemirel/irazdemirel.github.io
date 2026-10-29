@@ -10,13 +10,13 @@ export const site = {
     'Yazılım sektöründe çalışıyorum. Öğrendiklerimi, projelerimi ve izlediğim, okuduğum, dinlediğim şeyleri burada yazıyorum.',
   statement: {
     big: ['Öğrenirken', 'paylaşıyorum.'],
-    // Zaman çizelgesi: bir konunun yolculuğu
+    // Zaman çizelgesi: bir konunun yolculuğu (öğren → not al → paylaş → uygula)
     // href/link: varsa kartta küçük bir bağlantı çıkar
     steps: [
-      { t: 'Not alıyorum', d: 'Her yeni konu önce notlarıma düşer.' },
-      { t: 'Yazıyorum', d: 'Notlar toparlanıp bir blog yazısına dönüşür.', href: '/blog/', link: 'Blog' },
-      { t: 'Anlatıyorum', d: 'Yazının özü kısa bir videoya sığar.' },
-      { t: 'Üretiyorum', d: 'Bazen de hepsi bir projeye dönüşür.', href: '/projeler/', link: 'Projeler' },
+      { t: 'Öğreniyorum', d: 'Deep learning ve siber güvenlik, sıfırdan.' },
+      { t: 'Not alıyorum', d: 'Anladığım her şeyi kendi cümlelerimle yazıya döküyorum.' },
+      { t: 'Paylaşıyorum', d: 'Notlarım blogda ve Medium’da yazıya dönüşüyor.', href: '/blog/', link: 'Blog' },
+      { t: 'Uyguluyorum', d: 'Öğrendiğimi projelerde deneyip geliştiriyorum.', href: '/projeler/', link: 'Projeler' },
     ],
   },
   // Boş bırakılan link sitede görünmez.
