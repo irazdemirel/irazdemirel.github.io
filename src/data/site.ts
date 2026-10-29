@@ -26,7 +26,7 @@ export const site = {
     medium: 'https://medium.com/@iraz.demirel',
     instagram: '',
     tiktok: '',
-    kaggle: '',
+    kaggle: 'https://www.kaggle.com/irazdemirel',
   },
   // Avatar kareleri: public/avatar/frame-01.webp, frame-02.webp ... (bkz. README)
   avatar: {

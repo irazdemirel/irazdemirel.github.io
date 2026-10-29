@@ -14,6 +14,7 @@ const contacts = [
   l.email && { label: 'E-posta', href: `mailto:${l.email}`, text: l.email },
   l.linkedin && { label: 'LinkedIn', href: l.linkedin, text: 'linkedin.com/in/irazdemirel' },
   l.github && { label: 'GitHub', href: l.github, text: 'github.com/irazdemirel' },
+  l.kaggle && { label: 'Kaggle', href: l.kaggle, text: l.kaggle.replace(/^https?:\/\/(www\.)?/, '') },
   l.medium && { label: 'Medium', href: l.medium, text: l.medium.replace(/^https?:\/\//, '') },
   l.instagram && { label: 'Instagram', href: l.instagram, text: 'Instagram' },
   l.tiktok && { label: 'TikTok', href: l.tiktok, text: 'TikTok' },
