@@ -25,6 +25,14 @@
   --spine-4: #9cc5c0;
   --spine-5: #6f5a66;
   --wood: #d9c7bf;
+
+  /* 3D objeler (src/components/three): iki temada aynı, pastel */
+  --3d-cream: #f4ebdf;
+  --3d-cream-deep: #e3d4c1;
+  --3d-key: #fbf5ee;
+  --3d-screen: #2b2230;
+  --3d-screen-text: #f7dfe6;
+  --3d-plate: #6f5a66;
   --ink-1: #2a2228; --ink-2: #2a2228; --ink-3: #2a2228; --ink-4: #2a2228; --ink-5: #fff;
 
   --radius: 20px;

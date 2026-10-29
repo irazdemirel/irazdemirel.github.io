@@ -2,9 +2,10 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import ProjectStrip from '../components/ProjectStrip.astro';
-import RetroPC from '../components/RetroPC.astro';
+import Writing from '../components/Writing.astro';
 import Aquarium from '../components/Aquarium.astro';
 import Heatmap from '../components/Heatmap.astro';
+import Contact from '../components/Contact.astro';
 import { site } from '../data/site';
 import { getPosts, getProjects } from '../data/content';
 
@@ -72,7 +73,7 @@ const contacts = [
         <h2 class="section-title" data-split>Yazıyorum</h2>
         <a href="/blog/" class="label">Tümü →</a>
       </div>
-      <div class="reveal"><RetroPC posts={posts} /></div>
+      <div class="reveal"><Writing posts={posts} /></div>
     </div>
   </section>
 
@@ -87,21 +88,7 @@ const contacts = [
   <section class="section" id="iletisim">
     <div class="wrap">
       <h2 class="section-title" data-split>İletişim</h2>
-      <!-- Referans 3: basılınca çöken klavye tuşları (Faz 3'te gerçek 3D) -->
-      <ul class="keys">
-        {contacts.map((c, i) => (
-          <li class="reveal" style={`transition-delay:${i * 70}ms`}>
-            <a class="key" href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener" style={`--k:var(--spine-${(i % 5) + 1});--ki:var(--ink-${(i % 5) + 1})`}>
-              <span class="k-label">{c.label} <span aria-hidden="true">↗</span></span>
-              <span class="k-text">{c.text}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-      <script>
-        // iOS'ta :active (tuş basılı hali) dokunmada da çalışsın
-        document.querySelectorAll('.key').forEach((k) => k.addEventListener('touchstart', () => {}, { passive: true }));
-      </script>
+      <Contact contacts={contacts} />
     </div>
   </section>
 </Base>
@@ -168,36 +155,7 @@ const contacts = [
   #projeler { padding-top: clamp(40px, 5vw, 72px); }
   .head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
   .head a { text-decoration: none; white-space: nowrap; }
-  /* Klavye tuşları: üst yüz + altta koyu "kalınlık" gölgesi; basınca tuş iner */
-  .keys { list-style: none; margin: 0; padding: 0 0 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 20px 16px; }
-  .key {
-    --depth: 7px;
-    display: flex; flex-direction: column; gap: 2px; height: 100%; padding: 18px 20px 20px;
-    border-radius: 14px; text-decoration: none; color: var(--ki); background: var(--k);
-    box-shadow:
-      inset 0 2px 0 rgba(255, 255, 255, .35),
-      inset 0 -3px 0 rgba(0, 0, 0, .06),
-      0 var(--depth) 0 color-mix(in srgb, var(--k) 68%, #2a2228),
-      0 calc(var(--depth) + 10px) 22px -10px rgba(42, 34, 40, .45);
-    transform: translateY(0);
-    transition: transform .08s ease-out, box-shadow .08s ease-out;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .key:hover { color: var(--ki); --depth: 9px; transform: translateY(-2px); }
-  .key:active { --depth: 2px; transform: translateY(5px); }
-  .key:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 4px; }
-  .k-label { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; }
-  .k-text { font-family: var(--font-mono); font-size: 12px; opacity: .75; overflow-wrap: anywhere; }
-  @media (prefers-reduced-motion: reduce) {
-    .key { transition: none; }
-    .key:hover { transform: none; }
-  }
   @media (max-width: 760px) {
     .statement .grid { grid-template-columns: 1fr; gap: 40px; }
-    .big { position: static; }
-    .keys { grid-template-columns: 1fr 1fr; gap: 16px 12px; }
-    .keys li:last-child:nth-child(odd) { grid-column: 1 / -1; }
-    .key { padding: 14px 14px 16px; }
-    .k-text { font-size: 10.5px; }
   }
 </style>

@@ -8,7 +8,7 @@ const Tag = soon ? 'div' : 'a';
 const H = heading;
 const label = soon ? 'Çok yakında' : p.data.status;
 ---
-<Tag class:list={['pc', { soon }]} href={soon ? undefined : `/projeler/${p.id}/`} aria-disabled={soon ? 'true' : undefined}>
+<Tag class:list={['pc', { soon }]} data-tilt href={soon ? undefined : `/projeler/${p.id}/`} aria-disabled={soon ? 'true' : undefined}>
   <div class="cover">
     {p.data.cover ? <img src={p.data.cover} alt="" loading="lazy" /> : <span class="num">{String(index + 1).padStart(2, '0')}</span>}
     {soon && <span class="badge label">Çok yakında</span>}
@@ -21,7 +21,13 @@ const label = soon ? 'Çok yakında' : p.data.status;
 </Tag>
 
 <style>
-  .pc { text-decoration: none; display: block; color: inherit; }
+  /* data-tilt: motion.ts kartı imlece göre eğer; kapak öne çıkar (derinlik), parlama imleci izler */
+  .pc { text-decoration: none; display: block; color: inherit; position: relative; transform-style: preserve-3d; }
+  .pc::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+    background: radial-gradient(circle at var(--gx, 50%) var(--gy, 30%), rgba(255,255,255,.45), transparent 55%);
+    transition: opacity .4s;
+  }
   .cover {
     position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius); background: var(--surface); overflow: hidden;
     display: grid; place-items: center; box-shadow: var(--shadow);
@@ -30,7 +36,8 @@ const label = soon ? 'Çok yakında' : p.data.status;
   .cover img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
   /* Üzerine gelince hafifçe büyür (referans 5); sadece fareli cihazlarda */
   @media (hover: hover) {
-    .pc:hover .cover { transform: translateY(-4px) scale(1.03); box-shadow: 0 28px 50px -24px rgba(120, 60, 80, 0.45); }
+    .pc:hover .cover { transform: translateZ(28px) scale(1.02); box-shadow: 0 28px 50px -24px rgba(120, 60, 80, 0.45); }
+    .pc:hover::after { opacity: 1; }
   }
   a.pc:focus-visible { outline: none; }
   a.pc:focus-visible .cover { outline: 2px solid var(--accent-strong); outline-offset: 4px; }

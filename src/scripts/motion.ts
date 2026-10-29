@@ -6,6 +6,7 @@
 // - .hero-out: hero aşağı kaydırıldıkça hafifçe küçülüp solar
 // - [data-pin-steps]: bölüm pinlenir, zaman çizelgesi adım adım dolar (--p 0→1)
 // - .tank: akvaryum görününce balık dalar (.dropped)
+// - [data-tilt]: kart imlece göre hafif 3D eğilir
 // prefers-reduced-motion: hiçbiri çalışmaz, her şey son hâlinde statik durur.
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
@@ -29,7 +30,8 @@ export function initMotion() {
     parallax();
     heroOut();
     tank();
-    return () => lenis.destroy();
+    const untilt = tilt();
+    return () => { lenis.destroy(); untilt(); };
   });
 
   // Zaman çizelgesi: masaüstünde pin + scrub, dar/kısa ekranda pinsiz scrub
@@ -124,6 +126,29 @@ function tank() {
   document.querySelectorAll<HTMLElement>('.tank').forEach((t) => {
     ScrollTrigger.create({ trigger: t, start: 'top 65%', once: true, onEnter: () => t.classList.add('dropped') });
   });
+}
+
+// [data-tilt] kartlar: imlece göre hafif 3D eğilme + parlama (--gx/--gy). Sadece fareli cihazda.
+function tilt() {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return () => {};
+  const off: (() => void)[] = [];
+  gsap.utils.toArray<HTMLElement>('[data-tilt]').forEach((el) => {
+    gsap.set(el, { transformPerspective: 900 });
+    const rx = gsap.quickTo(el, 'rotationX', { duration: 0.6, ease: 'power3.out' });
+    const ry = gsap.quickTo(el, 'rotationY', { duration: 0.6, ease: 'power3.out' });
+    const move = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      rx(-y * 8); ry(x * 10);
+      el.style.setProperty('--gx', `${(x + 0.5) * 100}%`);
+      el.style.setProperty('--gy', `${(y + 0.5) * 100}%`);
+    };
+    const leave = () => { rx(0); ry(0); };
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerleave', leave);
+    off.push(() => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerleave', leave); });
+  });
+  return () => off.forEach((f) => f());
 }
 
 // "Öğrenirken paylaşıyorum": çizgi dolar, adımlar sırayla yanar
