@@ -11,7 +11,8 @@ Teknoloji: Astro (statik site) · Yayın: GitHub Pages (ücretsiz), `main`'e her
 | `src/content/blog/*.md` | Blog yazıları |
 | `src/content/projeler/*.md` | Projeler |
 | `public/avatar/` | Avatar kareleri |
-| `referans-notlari.md` | Düzen/yapı referansları |
+| `referanslar/` | Referans notları + kişisel kaynaklar (sadece yerelde, git'e gitmez) |
+| `CLAUDE.md` | Çalışma kuralları |
 
 ## Yazı / proje ekleme
 1. `_sablon.md`'yi kopyala → `ilk-kitap.md` gibi adlandır (dosya adı = adres).
