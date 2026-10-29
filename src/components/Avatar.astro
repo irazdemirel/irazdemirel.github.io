@@ -63,7 +63,12 @@ const mid = srcs[Math.floor(frames / 2)];
       if (ctx && f !== drawn) { ctx.drawImage(bitmaps[f], 0, 0, ctx.canvas.width, ctx.canvas.height); drawn = f; }
       loop = Math.abs(target - cur) > 0.05 ? requestAnimationFrame(draw) : 0;
     };
-    if (img && srcs.length && 'createImageBitmap' in window) {
+    // Kareler sayfa açılışını yavaşlatmasın: ilk etkileşimde ya da yüklendikten 3 sn sonra indirilir.
+    // O zamana kadar ortadaki kare <img> olarak durur.
+    let started = false;
+    const loadFrames = () => {
+      if (started || !img || !srcs.length || !('createImageBitmap' in window)) return;
+      started = true;
       Promise.all(srcs.map((s) => fetch(s).then((r) => r.blob()).then((b) => createImageBitmap(b))))
         .then((bmps) => {
           bitmaps = bmps;
@@ -77,7 +82,11 @@ const mid = srcs[Math.floor(frames / 2)];
           drawn = -1; draw();
         })
         .catch(() => {}); // olmazsa <img> yöntemiyle devam
-    }
+    };
+    ['pointermove', 'touchstart', 'scroll', 'keydown'].forEach((ev) =>
+      window.addEventListener(ev, loadFrames, { once: true, passive: true }));
+    const later = () => setTimeout(loadFrames, 3000);
+    if (document.readyState === 'complete') later(); else window.addEventListener('load', later, { once: true });
 
     // 3 poz: 0 = sol, 1 = orta, 2 = sağ. Sınırda titremesin diye küçük pay (hysteresis).
     let pose = 1;

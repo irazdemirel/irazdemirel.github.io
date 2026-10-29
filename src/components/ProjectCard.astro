@@ -10,7 +10,7 @@ const label = soon ? 'Çok yakında' : p.data.status;
 ---
 <Tag class:list={['pc', { soon }]} data-tilt href={soon ? undefined : `/projeler/${p.id}/`} aria-disabled={soon ? 'true' : undefined}>
   <div class="cover">
-    {p.data.cover ? <img src={p.data.cover} alt="" loading="lazy" /> : <span class="num">{String(index + 1).padStart(2, '0')}</span>}
+    {p.data.cover ? <img src={p.data.cover} alt="" loading="lazy" decoding="async" fetchpriority="low" /> : <span class="num">{String(index + 1).padStart(2, '0')}</span>}
     {soon && <span class="badge label">Çok yakında</span>}
   </div>
   <div class="meta">
