@@ -13,6 +13,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <html lang="tr">
   <head>
     <meta charset="utf-8" />
+    <script is:inline>
+      // Tema sayfa çizilmeden uygulanır (yanıp sönme olmasın): kayıtlı seçim, yoksa sistem teması
+      (function () {
+        var t; try { t = localStorage.getItem('tema'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <meta name="color-scheme" content="light dark" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />

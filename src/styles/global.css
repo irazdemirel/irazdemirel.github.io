@@ -71,6 +71,11 @@ a:hover { color: var(--accent-strong); }
 .prose pre { background: var(--surface); padding: 16px; border-radius: var(--radius); overflow-x: auto; }
 .prose pre code { background: none; padding: 0; }
 
+/* Tema geçişi (lamba): sadece renkler, kısa süre yumuşak */
+html.theme-anim body, html.theme-anim body *:not(.lamp *) {
+  transition: background-color .5s ease, color .5s ease, border-color .5s ease, fill .5s ease, stroke .5s ease !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   [data-progress] { --p: 1 !important; }

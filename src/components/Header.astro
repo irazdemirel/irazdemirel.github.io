@@ -1,15 +1,19 @@
 ---
 import { site, nav } from '../data/site';
+import Lamp from './Lamp.astro';
 const path = Astro.url.pathname;
 ---
 <header class="hdr">
   <div class="wrap row">
     <a href="/" class="logo">{site.name.first} <b>{site.name.last}</b></a>
-    <nav aria-label="Ana menü">
-      {nav.map((n) => (
-        <a href={n.href} class="label" aria-current={path.startsWith(n.href) && n.href !== '/' && !n.href.includes('#') ? 'page' : undefined}>{n.label}</a>
-      ))}
-    </nav>
+    <div class="end">
+      <nav aria-label="Ana menü">
+        {nav.map((n) => (
+          <a href={n.href} class="label" aria-current={path.startsWith(n.href) && n.href !== '/' && !n.href.includes('#') ? 'page' : undefined}>{n.label}</a>
+        ))}
+      </nav>
+      <Lamp />
+    </div>
   </div>
 </header>
 
@@ -18,6 +22,7 @@ const path = Astro.url.pathname;
   .row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }
   .logo { text-decoration: none; font-family: var(--font-display); font-weight: 300; font-size: 18px; letter-spacing: -0.01em; white-space: nowrap; }
   .logo b { font-weight: 700; }
+  .end { display: flex; align-items: center; gap: 20px; }
   /* Kumo: küçük, sütunlar halinde nav */
   nav { display: grid; grid-template-columns: repeat(5, auto); column-gap: 28px; }
   nav a { text-decoration: none; color: var(--text); }
@@ -25,5 +30,6 @@ const path = Astro.url.pathname;
   @media (max-width: 560px) {
     nav { grid-template-columns: repeat(3, auto); column-gap: 12px; row-gap: 2px; justify-items: end; }
     nav a { font-size: 11px; }
+    .end { gap: 8px; }
   }
 </style>

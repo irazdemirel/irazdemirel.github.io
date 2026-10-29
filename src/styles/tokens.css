@@ -31,8 +31,23 @@
   --maxw: 1200px;
 }
 
+/* Koyu tema: lamba ile seçilir (data-theme). JS yoksa sistem teması.
+   İki blok aynı değerleri taşır; değiştirirken ikisini birden güncelle. */
+:root[data-theme='dark'] {
+  --bg: #1b1619;
+  --surface: #262025;
+  --text: #f3eaee;
+  --muted: #a8989f;
+  --line: #3a3036;
+  --accent: #e8a0b4;
+  --accent-strong: #f0b6c7;
+  --accent-soft: #3a2a31;
+  --accent-contrast: #1b1619;
+  --shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.7);
+  --wood: #4a3d42;
+}
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
+  :root:not([data-theme]) {
     --bg: #1b1619;
     --surface: #262025;
     --text: #f3eaee;
