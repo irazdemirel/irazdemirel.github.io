@@ -5,6 +5,6 @@ date: 2026-10-29
 status: "Deep learning"
 stack: ["Python", "YOLO"]
 order: 30
-cover: "/projeler/logo-tespiti.svg"
+cover: "/projeler/logo-tespiti-pl.png"
 comingSoon: true
 ---

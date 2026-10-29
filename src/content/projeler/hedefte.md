@@ -4,7 +4,7 @@ summary: "Öğrencilerin onaylı rehberlerden online randevu alıp mesajlaşabil
 date: 2026-02-11
 status: "Python · Django"
 stack: ["Python", "Django"]
-cover: "/projeler/hedefte.webp"
+cover: "/projeler/hedefte-pl.png"
 order: 25
 comingSoon: true # herkese açık değil — kod/detay paylaşılmıyor
 ---
