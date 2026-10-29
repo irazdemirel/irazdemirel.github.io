@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getProjects } from '../../data/content';
+const projects = await getProjects();
+---
+<Base title="Projeler" description="Üzerinde çalıştığım ve tamamladığım projeler.">
+  <section class="section wrap">
+    <h1 class="section-title" data-split>Projeler</h1>
+    {projects.length === 0 ? <p class="empty">İlk projeler yakında burada.</p> : (
+      <ul class="grid">
+        {projects.map((p, i) => (
+          <li class="reveal">
+            <a href={`/projeler/${p.id}/`}>
+              <div class="cover">{p.data.cover ? <img src={p.data.cover} alt="" loading="lazy" /> : <span>{String(i + 1).padStart(2, '0')}</span>}</div>
+              <span class="label">{p.data.status}{p.data.draft ? ' · TASLAK' : ''}</span>
+              <h2>{p.data.title}</h2>
+              <p>{p.data.summary}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</Base>
+
+<style>
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 32px 24px; }
+  a { text-decoration: none; display: block; }
+  .cover { aspect-ratio: 4 / 3; border-radius: var(--radius); background: var(--surface); display: grid; place-items: center; overflow: hidden; margin-bottom: 14px; }
+  .cover img { width: 100%; height: 100%; object-fit: cover; }
+  .cover span { font-size: 72px; font-weight: 300; color: var(--line); }
+  h2 { margin: 6px 0 4px; font-size: 24px; letter-spacing: -0.01em; }
+  p { margin: 0; color: var(--muted); }
+</style>

@@ -1,0 +1,13 @@
+---
+import { site } from '../data/site';
+const year = new Date().getFullYear();
+---
+<footer class="wrap ftr">
+  <span class="label">© {year} {site.title}</span>
+  <a class="label" href="#top" onclick="window.scrollTo({top:0});return false;">Yukarı ↑</a>
+</footer>
+
+<style>
+  .ftr { display: flex; justify-content: space-between; padding-block: 32px; border-top: 1px solid var(--line); }
+  a { text-decoration: none; }
+</style>

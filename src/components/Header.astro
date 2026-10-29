@@ -1,0 +1,29 @@
+---
+import { site, nav } from '../data/site';
+const path = Astro.url.pathname;
+---
+<header class="hdr">
+  <div class="wrap row">
+    <a href="/" class="logo">{site.name.first} <b>{site.name.last}</b></a>
+    <nav aria-label="Ana menü">
+      {nav.map((n) => (
+        <a href={n.href} class="label" aria-current={path.startsWith(n.href) && n.href !== '/' && !n.href.includes('#') ? 'page' : undefined}>{n.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .hdr { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(10px); }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }
+  .logo { text-decoration: none; font-family: var(--font-display); font-weight: 300; font-size: 18px; letter-spacing: -0.01em; white-space: nowrap; }
+  .logo b { font-weight: 700; }
+  /* Kumo: küçük, sütunlar halinde nav */
+  nav { display: grid; grid-template-columns: repeat(4, auto); column-gap: 28px; }
+  nav a { text-decoration: none; color: var(--text); }
+  nav a:hover, nav a[aria-current='page'] { text-decoration: underline; text-underline-offset: 4px; }
+  @media (max-width: 560px) {
+    nav { grid-template-columns: repeat(2, auto); column-gap: 16px; row-gap: 2px; }
+    nav a { font-size: 11px; }
+  }
+</style>

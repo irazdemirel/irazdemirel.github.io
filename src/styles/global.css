@@ -1,0 +1,76 @@
+@import './tokens.css';
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+::selection { background: var(--accent); color: var(--accent-contrast); }
+
+.wrap { width: min(var(--maxw), 100% - 32px); margin-inline: auto; }
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section { padding-block: clamp(64px, 10vw, 140px); }
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 8vw, 96px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  margin: 0 0 40px;
+}
+
+/* Harf harf belirme (Kumo "Selected works") */
+.split .ch {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(0.2em);
+  transition: opacity 0.6s, filter 0.6s, transform 0.6s;
+  transition-delay: calc(var(--i) * 35ms);
+}
+.split.in .ch { opacity: 1; filter: none; transform: none; }
+
+/* Genel kaydırınca belirme */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s, transform 0.8s; }
+.reveal.in { opacity: 1; transform: none; }
+
+.empty {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 32px;
+  color: var(--muted);
+}
+
+/* Blog yazısı */
+.prose { max-width: 680px; }
+.prose h2 { font-family: var(--font-display); font-size: 1.6em; line-height: 1.2; margin: 2em 0 0.6em; }
+.prose h3 { font-size: 1.2em; margin: 1.6em 0 0.4em; }
+.prose img { border-radius: var(--radius); margin: 1.5em 0; }
+.prose blockquote { margin: 1.5em 0; padding-left: 1em; border-left: 3px solid var(--text); color: var(--muted); }
+.prose code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surface); padding: 0.1em 0.35em; border-radius: 6px; }
+.prose pre { background: var(--surface); padding: 16px; border-radius: var(--radius); overflow-x: auto; }
+.prose pre code { background: none; padding: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .split .ch, .reveal { opacity: 1 !important; filter: none !important; transform: none !important; transition: none !important; }
+}

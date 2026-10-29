@@ -1,0 +1,28 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getPosts, fmtDate } from '../../data/content';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+<Base title={post.data.title} description={post.data.description}>
+  <article class="section wrap">
+    <a href="/blog/" class="label back">← Blog</a>
+    <p class="label">{post.data.tag} · {fmtDate(post.data.date)}</p>
+    <h1>{post.data.title}</h1>
+    <p class="lede">{post.data.description}</p>
+    <div class="prose"><Content /></div>
+    {post.data.medium && <p class="label"><a href={post.data.medium} target="_blank" rel="noopener">Medium’da oku ↗</a></p>}
+  </article>
+</Base>
+
+<style>
+  .back { text-decoration: none; display: inline-block; margin-bottom: 32px; }
+  h1 { font-family: var(--font-display); font-size: clamp(36px, 6vw, 72px); line-height: 1; letter-spacing: -0.03em; margin: 12px 0 16px; max-width: 18ch; }
+  .lede { font-size: 20px; color: var(--muted); max-width: 680px; margin: 0 0 40px; }
+</style>

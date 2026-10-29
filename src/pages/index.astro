@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import ProjectStrip from '../components/ProjectStrip.astro';
+import PostList from '../components/PostList.astro';
+import { site } from '../data/site';
+import { getPosts, getProjects } from '../data/content';
+
+const projects = await getProjects();
+const posts = (await getPosts()).slice(0, 5);
+const l = site.links;
+const contacts = [
+  l.email && { label: 'E-posta', href: `mailto:${l.email}`, text: l.email },
+  l.linkedin && { label: 'LinkedIn', href: l.linkedin, text: 'linkedin.com/in/irazdemirel' },
+  l.github && { label: 'GitHub', href: l.github, text: 'github.com/irazdemirel' },
+  l.medium && { label: 'Medium', href: l.medium, text: 'Medium' },
+  l.instagram && { label: 'Instagram', href: l.instagram, text: 'Instagram' },
+  l.tiktok && { label: 'TikTok', href: l.tiktok, text: 'TikTok' },
+].filter(Boolean) as { label: string; href: string; text: string }[];
+---
+<Base>
+  <Hero />
+
+  <!-- Büyük cümle: sol altta slogan, sağ üstte küçük paragraf (Kumo) -->
+  <section class="statement section">
+    <div class="wrap grid">
+      <p class="small reveal">{site.statement.small}</p>
+      <h2 class="big reveal">{site.statement.big.map((s) => <span>{s}</span>)}</h2>
+    </div>
+  </section>
+
+  <section class="section" id="projeler">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="section-title" data-split>Projeler</h2>
+        <a href="/projeler/" class="label">Tümü →</a>
+      </div>
+      <ProjectStrip projects={projects} />
+    </div>
+  </section>
+
+  <section class="section" id="blog">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="section-title" data-split>Son yazılar</h2>
+        <a href="/blog/" class="label">Tümü →</a>
+      </div>
+      <PostList posts={posts} />
+    </div>
+  </section>
+
+  <section class="section" id="hakkimda">
+    <div class="wrap two">
+      <h2 class="section-title" data-split>Hakkımda</h2>
+      <div class="reveal about">{site.about.map((p) => <p>{p}</p>)}</div>
+    </div>
+  </section>
+
+  <section class="section" id="iletisim">
+    <div class="wrap">
+      <h2 class="section-title" data-split>İletişim</h2>
+      <ul class="contacts">
+        {contacts.map((c) => (
+          <li class="reveal">
+            <span class="label">{c.label}</span>
+            <a href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener">{c.text} ↗</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .statement .grid { display: grid; grid-template-columns: 1fr minmax(0, 340px); grid-template-rows: auto auto; gap: 48px; }
+  .small { grid-column: 2; grid-row: 1; color: var(--muted); margin: 0; }
+  .big {
+    grid-column: 1 / -1; grid-row: 2; margin: 0;
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(48px, 10vw, 140px); line-height: 0.92; letter-spacing: -0.04em;
+  }
+  .big span { display: block; }
+  .big span:last-child { font-weight: 300; }
+  .head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .head a { text-decoration: none; white-space: nowrap; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .about p { margin: 0 0 1em; font-size: clamp(18px, 2vw, 22px); }
+  .contacts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .contacts li { display: grid; grid-template-columns: 160px 1fr; padding: 18px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .contacts a { font-size: clamp(18px, 2.4vw, 28px); text-decoration: none; overflow-wrap: anywhere; }
+  .contacts a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  @media (max-width: 760px) {
+    .statement .grid { grid-template-columns: 1fr; gap: 24px; }
+    .small { grid-column: 1; }
+    .two { grid-template-columns: 1fr; gap: 0; }
+    .contacts li { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>

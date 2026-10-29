@@ -1,0 +1,33 @@
+/*
+  MARKA TOKENLARI — renk ve font kararları buraya.
+  Şu an NÖTR yer tutucu. Kararlar İçerik sohbetinde verilip marka/ klasörüne yazılınca
+  sadece bu dosya değişir; sitenin geri kalanı bu değişkenleri kullanır.
+*/
+:root {
+  --font-display: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+
+  --bg: #f6f6f5;
+  --surface: #ececea;
+  --text: #161616;
+  --muted: #6b6b6b;
+  --line: #d6d6d3;
+  --accent: #161616; /* marka rengi gelince değişecek */
+  --accent-contrast: #ffffff;
+
+  --radius: 14px;
+  --maxw: 1200px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #121212;
+    --surface: #1c1c1c;
+    --text: #ededed;
+    --muted: #9a9a9a;
+    --line: #2c2c2c;
+    --accent: #ededed;
+    --accent-contrast: #121212;
+  }
+}

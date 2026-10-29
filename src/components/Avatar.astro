@@ -1,0 +1,70 @@
+---
+/*
+  İmleci takip eden avatar (referans: abie.learns reels'i).
+  site.ts → avatar.frames > 0 olunca public/avatar/frame-01.webp ... kareleri kullanılır:
+  imlecin yatay konumu → kare numarası. Kareler soldan bakış → karşı → sağa bakış sırasıyla olmalı.
+*/
+import { site } from '../data/site';
+const { frames, pattern, alt } = site.avatar;
+const pad = (n: number) => String(n).padStart(2, '0');
+const srcs = Array.from({ length: frames }, (_, i) => pattern.replace('{n}', pad(i + 1)));
+const mid = srcs[Math.floor(frames / 2)];
+---
+<div class="avatar" data-frames={JSON.stringify(srcs)}>
+  {frames > 0 ? (
+    <img src={mid} alt={alt} width="600" height="600" fetchpriority="high" />
+  ) : (
+    <div class="placeholder" role="img" aria-label="Avatar yakında">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <g class="head">
+          <circle cx="100" cy="78" r="38" />
+          <g class="eyes"><circle cx="87" cy="78" r="4" /><circle cx="113" cy="78" r="4" /></g>
+        </g>
+        <path d="M38 196c4-44 30-66 62-66s58 22 62 66z" />
+      </svg>
+      <span class="label">Avatar yakında</span>
+    </div>
+  )}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.avatar').forEach((root) => {
+    const srcs: string[] = JSON.parse(root.dataset.frames || '[]');
+    const img = root.querySelector('img');
+    const eyes = root.querySelector<SVGGElement>('.eyes');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    // Kareleri önden yükle
+    srcs.forEach((s) => { const i = new Image(); i.src = s; });
+
+    let raf = 0;
+    const update = (x: number) => {
+      const t = Math.min(1, Math.max(0, x / window.innerWidth)); // 0 = sol, 1 = sağ
+      if (img && srcs.length) {
+        const src = srcs[Math.round(t * (srcs.length - 1))];
+        if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+      } else if (eyes) {
+        eyes.style.transform = `translateX(${(t - 0.5) * 12}px)`;
+      }
+    };
+    window.addEventListener('pointermove', (e) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => update(e.clientX));
+    }, { passive: true });
+    document.addEventListener('pointerleave', () => update(window.innerWidth / 2));
+  });
+</script>
+
+<style>
+  .avatar { aspect-ratio: 1; width: 100%; max-width: 520px; margin-inline: auto; }
+  .avatar img { width: 100%; height: 100%; object-fit: contain; }
+  .placeholder {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: var(--surface);
+    display: grid; place-items: center; position: relative; overflow: hidden;
+  }
+  .placeholder svg { width: 70%; fill: var(--line); }
+  .placeholder .eyes { fill: var(--muted); transition: transform 0.25s ease-out; }
+  .placeholder .label { position: absolute; bottom: 12%; }
+</style>
