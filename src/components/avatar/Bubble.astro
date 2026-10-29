@@ -1,0 +1,57 @@
+---
+// Hero avatarı · Cam sabun köpüğü (tek efekt). Masaüstünde 3D (three/AvatarBubble.tsx);
+// mobilde ve 3D yüklenene kadar CSS köpük (gökkuşağı film + parlak kenar, hafif salınım).
+import AvatarBubble from '../three/AvatarBubble';
+import { srcs, mid, alt } from './frames';
+---
+<div class="bubble" data-frames={JSON.stringify(srcs)}>
+  <div class="dom">
+    <img class="still" src={mid} alt={alt} width="560" height="560" fetchpriority="high" />
+    <span class="film" aria-hidden="true"></span>
+    <span class="gloss" aria-hidden="true"></span>
+  </div>
+  <AvatarBubble client:media="(min-width: 821px)" />
+</div>
+
+<script>
+  import { followAvatar } from '../../scripts/avatar-follow';
+  document.querySelectorAll<HTMLElement>('.bubble').forEach(followAvatar);
+</script>
+
+<style>
+  .bubble { --mx: 0; --my: 0; position: relative; width: min(100%, 480px); aspect-ratio: 1; margin-inline: auto; }
+  .bubble :global(.bubble3d) { position: absolute; inset: -12%; pointer-events: none; }
+  .dom {
+    position: absolute; inset: 5%; border-radius: 50%; overflow: hidden;
+    transition: opacity .6s;
+    animation: sal 5s ease-in-out infinite;
+  }
+  /* 3D köpük hazır olunca CSS köpük çekilir (kareler yine burada çizilir, doku olarak kullanılır) */
+  .bubble:global(.ready) .dom { opacity: 0; }
+  /* canvas (kareler) JS ile eklenir, scoped stil almaz → :global */
+  .dom .still, .dom :global(canvas.still) { display: block; width: 100%; height: 100%; object-fit: cover; scale: 1.06; }
+  /* köpük zarı: kenarda gökkuşağı halka (ortası saydam), imlece göre döner */
+  .film {
+    position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+    background: conic-gradient(from 200deg, var(--spine-1), var(--spine-3), var(--spine-4), var(--spine-2), var(--spine-1));
+    opacity: .9;
+    -webkit-mask: radial-gradient(closest-side, transparent 80%, rgba(0,0,0,.5) 91%, #000 99%);
+            mask: radial-gradient(closest-side, transparent 80%, rgba(0,0,0,.5) 91%, #000 99%);
+    transform: rotate(calc(var(--mx) * 30deg));
+  }
+  /* ışık lekeleri: sol üstte büyük, sağ altta küçük + ince beyaz kenar */
+  .gloss {
+    position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+    background:
+      radial-gradient(ellipse 9% 6% at 27% 22%, rgba(255,255,255,.9), transparent),
+      radial-gradient(circle at 74% 78%, rgba(255,255,255,.7) 0 1.5%, transparent 3.5%);
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.55), inset 0 0 30px rgba(255,255,255,.25);
+  }
+  /* sabun köpüğü gibi hafifçe esneyip salınır (sadece transform) */
+  @keyframes sal {
+    0%, 100% { transform: translateY(0) scale(1, 1); }
+    33% { transform: translateY(-6px) scale(1.012, .99); }
+    66% { transform: translateY(-2px) scale(.99, 1.012); }
+  }
+  @media (prefers-reduced-motion: reduce) { .dom { animation: none; } }
+</style>
