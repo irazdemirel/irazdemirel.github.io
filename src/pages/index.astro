@@ -28,9 +28,20 @@ const contacts = [
     <div class="wrap grid">
       <h2 class="big reveal">{site.statement.big.map((s) => <span>{s}</span>)}</h2>
       <ol class="timeline" data-progress>
+        <!-- Kaydırdıkça çizgide aşağı yüzen balık + baloncuklar -->
+        <li class="swimmer" aria-hidden="true">
+          <svg class="fish" viewBox="0 0 64 40">
+            <path class="tail" d="M14 20 L0 6 Q4 20 0 34 Z" />
+            <ellipse cx="34" cy="20" rx="22" ry="15" />
+            <path class="fin" d="M30 6 Q36 -2 42 7 Z" />
+            <circle cx="46" cy="16" r="4" fill="#fff" /><circle cx="47" cy="16" r="2" fill="#2a2228" />
+            <circle cx="40" cy="24" r="2.6" fill="#f7a8c0" opacity=".8" />
+          </svg>
+          <span class="bub b1"></span><span class="bub b2"></span><span class="bub b3"></span>
+        </li>
         {site.statement.steps.map((st, i) => (
-          <li class="reveal" style={`transition-delay:${i * 120}ms`}>
-            <span class="dot" aria-hidden="true" />
+          <li class="reveal step" style={`transition-delay:${i * 120}ms;--c:var(--spine-${(i % 4) + 1})`}>
+            <span class="dot" aria-hidden="true">{['✎', '♡', '▶', '★'][i % 4]}</span>
             <span class="label">{String(i + 1).padStart(2, '0')}</span>
             <h3>{st.t}</h3>
             <p>{st.d}</p>
@@ -103,10 +114,57 @@ const contacts = [
   .timeline { list-style: none; margin: 0; padding: 0 0 0 36px; position: relative; --p: 0; }
   .timeline::before, .timeline::after { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; }
   .timeline::before { background: var(--line); }
-  .timeline::after { background: var(--accent); transform-origin: top; transform: scaleY(var(--p)); }
-  .timeline li { position: relative; padding-bottom: 44px; }
+  .timeline::after {
+    background: linear-gradient(var(--spine-1), var(--spine-2), var(--spine-3), var(--spine-4));
+    transform-origin: top; transform: scaleY(var(--p)); width: 4px; left: 6px;
+  }
+  .timeline li.step { position: relative; padding-bottom: 44px; }
   .timeline li:last-child { padding-bottom: 0; }
-  .dot { position: absolute; left: -36px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 3px solid var(--accent); }
+  /* Adım kartı yaylanarak sağdan gelir */
+  .timeline .step.reveal { transform: translateX(40px) scale(.96); transition: opacity .6s, transform .8s cubic-bezier(.34,1.56,.64,1); }
+  .timeline .step.reveal.in { transform: none; }
+  .dot {
+    position: absolute; left: -46px; top: -2px; width: 36px; height: 36px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 16px; color: #2a2228;
+    background: var(--c); border: 3px solid var(--bg);
+    box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--c) 70%, #2a2228), inset 0 2px 0 rgba(255,255,255,.5);
+    transform: scale(0);
+  }
+  .step.in .dot { animation: zipla .9s cubic-bezier(.34,1.56,.64,1) forwards, sallan 3s ease-in-out 1s infinite; animation-delay: inherit; }
+  .step.in .dot::after {
+    content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--c);
+    animation: halka 1.2s ease-out .3s;
+    opacity: 0;
+  }
+  .step h3 { transition: transform .3s cubic-bezier(.34,1.56,.64,1), color .3s; transform-origin: left; }
+  .step:hover h3 { transform: rotate(-2deg) scale(1.05); color: var(--accent-strong); }
+  .step:hover .dot { animation: hopla .5s cubic-bezier(.34,1.56,.64,1); transform: scale(1); }
+  @keyframes zipla { 0% { transform: scale(0) translateY(-20px); } 60% { transform: scale(1.2) translateY(0); } 100% { transform: scale(1); } }
+  @keyframes sallan { 0%, 100% { rotate: 0deg; } 25% { rotate: -8deg; } 75% { rotate: 8deg; } }
+  @keyframes hopla { 50% { transform: scale(1.15) translateY(-8px); } }
+  @keyframes halka { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.9); opacity: 0; } }
+
+  /* Yüzen balık: çizgide --p (kaydırma ilerlemesi) kadar aşağıda */
+  .swimmer {
+    position: absolute; left: -15px; top: calc(var(--p) * (100% - 52px));
+    width: 46px; height: 52px; z-index: 2; pointer-events: none;
+  }
+  .fish { width: 46px; rotate: 90deg; fill: var(--accent); overflow: visible; filter: drop-shadow(0 4px 6px rgba(120,60,80,.3)); animation: yuz 1.6s ease-in-out infinite; }
+  .fish .tail { fill: var(--accent-strong); transform-origin: 14px 20px; animation: kuyruk .4s ease-in-out infinite alternate; }
+  .fish .fin { fill: var(--accent-strong); }
+  @keyframes yuz { 50% { translate: 4px 0; } }
+  @keyframes kuyruk { to { transform: scaleY(.6) rotate(8deg); } }
+  .bub { position: absolute; left: 12px; top: 0; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--spine-4); background: rgba(255,255,255,.4); opacity: 0; animation: baloncuk 2.4s ease-out infinite; }
+  .b2 { width: 6px; height: 6px; left: 20px; animation-delay: .8s; }
+  .b3 { width: 10px; height: 10px; left: 6px; animation-delay: 1.6s; }
+  @keyframes baloncuk { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translate(10px, -60px); opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dot { transform: none; }
+    .step.in .dot, .step:hover .dot, .step.in .dot::after, .fish, .fish .tail, .bub { animation: none; }
+    .bub { display: none; }
+    .timeline .step.reveal { transform: none; }
+  }
   .timeline h3 { font-family: var(--font-display); font-size: clamp(22px, 2.6vw, 30px); letter-spacing: -0.02em; margin: 4px 0 4px; }
   .timeline p { margin: 0; color: var(--muted); }
   .sub { color: var(--muted); margin: -24px 0 28px; max-width: 52ch; }
