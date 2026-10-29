@@ -43,7 +43,7 @@ export const site = {
 export const nav = [
   { href: '/projeler/', label: 'Projeler' },
   { href: '/blog/', label: 'Blog' },
-  { href: '/kultur/', label: 'Kültürleniyorum' },
+  { href: '/kultur/', label: 'Keşfediyorum' },
   { href: '/#calisiyorum', label: 'Çalışıyorum' },
   { href: '/#iletisim', label: 'İletişim' },
 ];

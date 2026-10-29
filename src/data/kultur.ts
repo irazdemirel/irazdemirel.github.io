@@ -1,4 +1,4 @@
-// Kültürleniyorum sayfası: kitaplar, diziler, filmler, oyunlar, konserler.
+// Keşfediyorum sayfası (/kultur/): kitaplar, diziler, filmler, oyunlar, konserler.
 // Yazısı yayınlanınca `yazi` alanına adresini ekle (site içi '/blog/...' ya da Medium linki).
 // Yazısı yoksa "Yazısı yakında" görünür, tıklanmaz.
 // Kitaplar: `cover` = kapak görseli (public/kultur/), `color` = sırt rengi.
