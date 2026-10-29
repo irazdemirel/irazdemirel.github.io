@@ -9,7 +9,7 @@ const projects = await getProjects();
     <h1 class="section-title" data-split>Projeler</h1>
     {projects.length === 0 ? <p class="empty">İlk projeler yakında burada.</p> : (
       <ul class="grid">
-        {projects.map((p, i) => <li class="reveal"><ProjectCard project={p} index={i} heading="h2" /></li>)}
+        {projects.map((p, i) => <li class="reveal" style={`transition-delay:${(i % 3) * 90}ms`}><ProjectCard project={p} index={i} heading="h2" /></li>)}
       </ul>
     )}
   </section>

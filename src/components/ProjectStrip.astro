@@ -9,13 +9,14 @@ const { projects } = Astro.props;
   <p class="empty">İlk projeler yakında burada.</p>
 ) : (
   <ul class="strip">
-    {projects.map((p, i) => <li class="reveal"><ProjectCard project={p} index={i} /></li>)}
+    {projects.map((p, i) => <li class="reveal" style={`transition-delay:${i * 90}ms`}><ProjectCard project={p} index={i} /></li>)}
   </ul>
 )}
 
 <style>
   .strip {
-    list-style: none; margin: 0; padding: 0 0 16px;
+    /* üst/yan boşluk: büyüyen kart kesilmesin */
+    list-style: none; margin: -12px -12px 0; padding: 12px 12px 16px; scroll-padding-inline: 12px;
     display: grid; grid-auto-flow: column; grid-auto-columns: minmax(280px, 380px); gap: 20px;
     overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory;
   }
