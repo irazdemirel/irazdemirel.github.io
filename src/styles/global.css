@@ -72,6 +72,7 @@ a { color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  [data-progress] { --p: 1 !important; }
   .split .ch, .reveal { opacity: 1 !important; filter: none !important; transform: none !important; transition: none !important; }
 }
 

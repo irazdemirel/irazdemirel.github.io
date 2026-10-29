@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import ProjectStrip from '../components/ProjectStrip.astro';
 import PostList from '../components/PostList.astro';
+import Heatmap from '../components/Heatmap.astro';
 import { site } from '../data/site';
 import { getPosts, getProjects } from '../data/content';
 
@@ -21,11 +22,20 @@ const contacts = [
 <Base>
   <Hero />
 
-  <!-- Büyük cümle: sol altta slogan, sağ üstte küçük paragraf (Kumo) -->
+  <!-- Büyük cümle solda, bir konunun yolculuğu sağda zaman çizelgesi olarak -->
   <section class="statement section">
     <div class="wrap grid">
-      <p class="small reveal">{site.statement.small}</p>
-      <h2 class="big reveal">{site.statement.big.map((s, i) => <span data-slide={i % 2 ? 'right' : 'left'}>{s}</span>)}</h2>
+      <h2 class="big reveal">{site.statement.big.map((s) => <span>{s}</span>)}</h2>
+      <ol class="timeline" data-progress>
+        {site.statement.steps.map((st, i) => (
+          <li class="reveal" style={`transition-delay:${i * 120}ms`}>
+            <span class="dot" aria-hidden="true" />
+            <span class="label">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{st.t}</h3>
+            <p>{st.d}</p>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
@@ -42,17 +52,18 @@ const contacts = [
   <section class="section" id="blog">
     <div class="wrap">
       <div class="head">
-        <h2 class="section-title" data-split>Son yazılar</h2>
+        <h2 class="section-title" data-split>Yazıyorum</h2>
         <a href="/blog/" class="label">Tümü →</a>
       </div>
       <PostList posts={posts} />
     </div>
   </section>
 
-  <section class="section" id="hakkimda">
-    <div class="wrap two">
-      <h2 class="section-title" data-split>Hakkımda</h2>
-      <div class="reveal about">{site.about.map((p) => <p>{p}</p>)}</div>
+  <section class="section" id="calisiyorum">
+    <div class="wrap">
+      <h2 class="section-title" data-split>Çalışıyorum</h2>
+      <p class="sub reveal">Her kare bir gün. GitHub’a kod yüklediğim günler koyulaşıyor.</p>
+      <div class="reveal"><Heatmap /></div>
     </div>
   </section>
 
@@ -72,28 +83,34 @@ const contacts = [
 </Base>
 
 <style>
-  .statement .grid { display: grid; grid-template-columns: 1fr minmax(0, 340px); grid-template-rows: auto auto; gap: 48px; }
-  .small { grid-column: 2; grid-row: 1; color: var(--muted); margin: 0; }
+  .statement .grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: start; }
   .big {
-    grid-column: 1 / -1; grid-row: 2; margin: 0;
+    margin: 0; position: sticky; top: 96px;
     font-family: var(--font-display); font-weight: 600;
-    font-size: clamp(48px, 10vw, 140px); line-height: 0.92; letter-spacing: -0.04em;
+    font-size: clamp(48px, 8vw, 120px); line-height: 0.92; letter-spacing: -0.04em;
   }
-  .big span { display: block; will-change: transform; white-space: nowrap; }
-  .statement { overflow: hidden; }
+  .big span { display: block; }
   .big span:last-child { font-weight: 300; }
+  /* Zaman çizelgesi: çizgi kaydırdıkça dolar (--p) */
+  .timeline { list-style: none; margin: 0; padding: 0 0 0 36px; position: relative; --p: 0; }
+  .timeline::before, .timeline::after { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; }
+  .timeline::before { background: var(--line); }
+  .timeline::after { background: var(--text); transform-origin: top; transform: scaleY(var(--p)); }
+  .timeline li { position: relative; padding-bottom: 44px; }
+  .timeline li:last-child { padding-bottom: 0; }
+  .dot { position: absolute; left: -36px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 2px solid var(--text); }
+  .timeline h3 { font-family: var(--font-display); font-size: clamp(22px, 2.6vw, 30px); letter-spacing: -0.02em; margin: 4px 0 4px; }
+  .timeline p { margin: 0; color: var(--muted); }
+  .sub { color: var(--muted); margin: -24px 0 28px; max-width: 52ch; }
   .head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
   .head a { text-decoration: none; white-space: nowrap; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-  .about p { margin: 0 0 1em; font-size: clamp(18px, 2vw, 22px); }
   .contacts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
   .contacts li { display: grid; grid-template-columns: 160px 1fr; padding: 18px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
   .contacts a { font-size: clamp(18px, 2.4vw, 28px); text-decoration: none; overflow-wrap: anywhere; }
   .contacts a:hover { text-decoration: underline; text-underline-offset: 4px; }
   @media (max-width: 760px) {
-    .statement .grid { grid-template-columns: 1fr; gap: 24px; }
-    .small { grid-column: 1; }
-    .two { grid-template-columns: 1fr; gap: 0; }
+    .statement .grid { grid-template-columns: 1fr; gap: 40px; }
+    .big { position: static; }
     .contacts li { grid-template-columns: 1fr; gap: 4px; }
   }
 </style>

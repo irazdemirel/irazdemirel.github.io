@@ -10,13 +10,14 @@ export const site = {
     'Yazılım sektöründe çalışıyorum. Öğrendiklerimi, projelerimi ve izlediğim, okuduğum, dinlediğim şeyleri burada yazıyorum.',
   statement: {
     big: ['Öğrenirken', 'paylaşıyorum.'],
-    small:
-      'Her konu önce notlarıma düşer, sonra bir blog yazısına, kısa bir videoya ya da bir projeye dönüşür.',
+    // Zaman çizelgesi: bir konunun yolculuğu
+    steps: [
+      { t: 'Not', d: 'Her konu önce notlarıma düşer.' },
+      { t: 'Blog yazısı', d: 'Notlar bir yazıya dönüşür.' },
+      { t: 'Kısa video', d: 'Yazıdan kısa bir video çıkar.' },
+      { t: 'Proje', d: 'Bazen de bir projeye.' },
+    ],
   },
-  about: [
-    'İstanbul’dayım. Gün içinde yazılım testi ve iş geliştirme yapıyorum; bir yandan da deep learning ve siber güvenlik öğreniyorum.',
-    'Anadolu Üniversitesi’nde Bilgisayar Programcılığı okuyorum. Kitap, dizi, film, tiyatro ve konser benim için ayrı bir öğrenme alanı.',
-  ],
   // Boş bırakılan link sitede görünmez.
   links: {
     email: 'iraz.demirel@gmail.com',
@@ -25,6 +26,7 @@ export const site = {
     medium: 'https://medium.com/@iraz.demirel',
     instagram: '',
     tiktok: '',
+    kaggle: '',
   },
   // Avatar kareleri: public/avatar/frame-01.webp, frame-02.webp ... (bkz. README)
   avatar: {
@@ -38,6 +40,6 @@ export const nav = [
   { href: '/projeler/', label: 'Projeler' },
   { href: '/blog/', label: 'Blog' },
   { href: '/kultur/', label: 'Kültürleniyorum' },
-  { href: '/#hakkimda', label: 'Hakkımda' },
+  { href: '/#calisiyorum', label: 'Çalışıyorum' },
   { href: '/#iletisim', label: 'İletişim' },
 ];

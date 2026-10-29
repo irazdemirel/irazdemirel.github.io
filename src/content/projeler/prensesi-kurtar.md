@@ -6,7 +6,7 @@ status: "Prototip"
 stack: ["Flutter", "Flame"]
 # repo: "https://github.com/irazdemirel/prensesi-kurtar"  # repo düzenlenince aç
 order: 10
-cover: "/projeler/prensesi-kurtar.webp"
+cover: "/projeler/prensesi-kurtar-pl.png"
 comingSoon: true # repo hazır olunca false yap → detay sayfası açılır
 ---
 

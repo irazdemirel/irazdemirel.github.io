@@ -1,0 +1,76 @@
+---
+// Kareli katkı takvimi (GitHub tarzı). Haftalar sütun, günler satır.
+import { getContributions } from '../data/github';
+import { site } from '../data/site';
+const days = await getContributions();
+// Haftalara böl (Pazar başlangıçlı, GitHub ile aynı)
+const weeks: (typeof days)[] = [];
+let cur: typeof days = [];
+for (const d of days) {
+  const wd = new Date(d.date + 'T00:00:00Z').getUTCDay();
+  if (wd === 0 && cur.length) { weeks.push(cur); cur = []; }
+  cur.push(d);
+}
+if (cur.length) weeks.push(cur);
+const total = days.reduce((a, d) => a + d.count, 0);
+const active = days.filter((d) => d.count > 0).length;
+const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+const monthLabels = weeks.map((w, i) => {
+  const m = new Date(w[0].date + 'T00:00:00Z').getUTCMonth();
+  const prev = i > 0 ? new Date(weeks[i - 1][0].date + 'T00:00:00Z').getUTCMonth() : -1;
+  return m !== prev ? months[m] : '';
+});
+const fmt = (s: string) => new Date(s + 'T00:00:00Z').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+<div class="hm">
+  {days.length === 0 ? (
+    <p class="empty">Katkı takvimi derleme sırasında GitHub’dan alınamadı; bir sonraki yayında görünecek.</p>
+  ) : (
+    <>
+      <div class="stats">
+        <div><b>{total}</b><span class="label">katkı · son 1 yıl</span></div>
+        <div><b>{active}</b><span class="label">aktif gün</span></div>
+      </div>
+      <div class="scroll">
+        <div class="grid" style={`--w:${weeks.length}`}>
+          <div class="months" aria-hidden="true">{monthLabels.map((m) => <span>{m}</span>)}</div>
+          <div class="cells" role="img" aria-label={`Son bir yılda ${total} GitHub katkısı, ${active} aktif gün`}>
+            {weeks.map((w, wi) => (
+              <div class="col">
+                {w.map((d, di) => <i class={`l${d.level}`} style={wi === 0 && di === 0 ? `grid-row-start:${new Date(d.date + 'T00:00:00Z').getUTCDay() + 1}` : undefined} title={`${fmt(d.date)}: ${d.count} katkı`} />)}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div class="legend label"><span>Az</span>{[0, 1, 2, 3, 4].map((l) => <i class={`l${l}`} />)}<span>Çok</span></div>
+    </>
+  )}
+  <div class="links">
+    <a href={site.links.github} target="_blank" rel="noopener" class="label">GitHub ↗</a>
+    {site.links.kaggle && <a href={site.links.kaggle} target="_blank" rel="noopener" class="label">Kaggle ↗</a>}
+  </div>
+</div>
+
+<style>
+  .stats { display: flex; gap: 40px; margin-bottom: 20px; }
+  .stats div { display: flex; flex-direction: column; }
+  .stats b { font-family: var(--font-display); font-size: clamp(32px, 5vw, 48px); line-height: 1; letter-spacing: -0.03em; }
+  .scroll { overflow-x: auto; padding-bottom: 6px; }
+  .grid { display: inline-flex; flex-direction: column; gap: 6px; }
+  .months { display: grid; grid-template-columns: repeat(var(--w), 13px); column-gap: 3px; font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+  .months span { white-space: nowrap; overflow: visible; }
+  .cells { display: grid; grid-template-columns: repeat(var(--w), 13px); column-gap: 3px; }
+  .col { display: grid; grid-template-rows: repeat(7, 13px); row-gap: 3px; }
+  i { display: block; width: 13px; height: 13px; border-radius: 3px; background: var(--surface); }
+  i.l1 { background: color-mix(in srgb, var(--text) 25%, var(--surface)); }
+  i.l2 { background: color-mix(in srgb, var(--text) 45%, var(--surface)); }
+  i.l3 { background: color-mix(in srgb, var(--text) 68%, var(--surface)); }
+  i.l4 { background: var(--text); }
+  .legend { display: flex; align-items: center; gap: 4px; margin-top: 10px; }
+  .legend i { width: 11px; height: 11px; }
+  .legend span { margin: 0 4px; }
+  .links { display: flex; gap: 20px; margin-top: 24px; }
+  .links a { text-decoration: none; color: var(--text); }
+  .links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+</style>

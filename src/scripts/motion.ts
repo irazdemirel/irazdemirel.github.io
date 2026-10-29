@@ -3,6 +3,7 @@
 // - data-speed="0.2": parallax (öğe sayfadan farklı hızda kayar)
 // - data-slide="left|right": görünür alanda ilerledikçe yatay kayar
 // - .hero-out: hero aşağı kaydırıldıkça küçülüp solar
+// - data-progress: öğe ekranda ilerledikçe --p 0→1 (zaman çizelgesi çizgisi)
 import Lenis from 'lenis';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -26,6 +27,7 @@ export function initMotion() {
   const parallax = [...document.querySelectorAll<HTMLElement>('[data-speed]')];
   const slides = [...document.querySelectorAll<HTMLElement>('[data-slide]')];
   const hero = document.querySelector<HTMLElement>('.hero-out');
+  const progress = [...document.querySelectorAll<HTMLElement>('[data-progress]')];
   const vh = () => window.innerHeight;
 
   const update = () => {
@@ -40,6 +42,11 @@ export function initMotion() {
       const p = Math.min(1, Math.max(0, 1 - (r.top + r.height / 2) / h)); // 0 → 1 ekrandan geçerken
       const dir = el.dataset.slide === 'right' ? 1 : -1;
       el.style.transform = `translate3d(${(dir * (0.5 - p) * -18).toFixed(2)}vw, 0, 0)`;
+    }
+    for (const el of progress) {
+      const r = el.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (h * 0.65 - r.top) / r.height));
+      el.style.setProperty('--p', p.toFixed(3));
     }
     if (hero) {
       const p = Math.min(1, window.scrollY / (h * 0.9));
