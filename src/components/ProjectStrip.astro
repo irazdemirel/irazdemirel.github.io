@@ -9,7 +9,7 @@ const { projects } = Astro.props;
   <p class="empty">İlk projeler yakında burada.</p>
 ) : (
   <ul class="strip">
-    {projects.map((p, i) => <li class="reveal" style={`transition-delay:${i * 90}ms`}><ProjectCard project={p} index={i} /></li>)}
+    {projects.map((p, i) => <li class="reveal"><ProjectCard project={p} index={i} /></li>)}
   </ul>
 )}
 
@@ -22,4 +22,6 @@ const { projects } = Astro.props;
     scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
   }
   li { scroll-snap-align: start; }
+  /* Masaüstü yatay kaydırma (motion.ts → projectsScroll): şeridi GSAP kaydırır, kartlar genişler */
+  :global(.h-scroll) .strip { overflow: visible; scroll-snap-type: none; grid-auto-columns: clamp(300px, 30vw, 460px); will-change: transform; }
 </style>

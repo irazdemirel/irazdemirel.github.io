@@ -46,6 +46,10 @@ a:hover { color: var(--accent-strong); }
 .motion .reveal { opacity: 0; visibility: hidden; transform: translateY(24px); }
 .motion [data-split]:not(.split-ready) { visibility: hidden; }
 
+/* Bölüm zemin tonları: motion.ts her ton için bir katman ekler, sadece opaklığı değişir */
+.tones { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.tones > div { position: absolute; inset: 0; opacity: 0; }
+
 .empty {
   border: 1px dashed var(--line);
   border-radius: var(--radius);

@@ -7,6 +7,9 @@
 // - [data-pin-steps]: bölüm pinlenir, zaman çizelgesi adım adım dolar (--p 0→1)
 // - .tank: akvaryum görününce balık dalar (.dropped)
 // - [data-tilt]: kart imlece göre hafif 3D eğilir
+// - #projeler: masaüstünde pinlenir, kartlar dikey kaydırmayla yatay akar (Kumo)
+// - [data-tone="a|b|c|d"]: bölüm ekrandayken zemin o tona yumuşakça geçer (opacity katmanları)
+// - main > .section: yukarıdan çıkarken içerik hafifçe küçülüp solar (derinlik)
 // prefers-reduced-motion: hiçbiri çalışmaz, her şey son hâlinde statik durur.
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
@@ -40,8 +43,23 @@ export function initMotion() {
       pin: '(prefers-reduced-motion: no-preference) and (min-width: 761px) and (min-height: 640px)',
       flow: '(prefers-reduced-motion: no-preference) and ((max-width: 760px) or (max-height: 639px))',
     },
-    (ctx) => timeline(Boolean(ctx.conditions?.pin)),
+    (ctx) => {
+      const pin = Boolean(ctx.conditions?.pin);
+      timeline(pin);
+      if (pin) return projectsScroll();
+    },
   );
+
+  // Bölüm geçişleri: pinler oluştuktan sonra (pin boşluğunu doğru ölçsünler)
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    const untone = tones();
+    depth();
+    return untone;
+  });
+
+  // Tetikleyiciler sayfadaki sıraya göre hesaplansın (pin boşlukları sonrakileri kaydırır)
+  ScrollTrigger.sort();
+  ScrollTrigger.refresh();
 }
 
 function smoothScroll() {
@@ -150,6 +168,64 @@ function tilt() {
   });
   return () => off.forEach((f) => f());
 }
+
+// Projeler: bölüm pinlenir, kart şeridi dikey kaydırmayla sola akar (scrub)
+function projectsScroll() {
+  const sec = document.querySelector<HTMLElement>('#projeler');
+  const strip = sec?.querySelector<HTMLElement>('.strip');
+  if (!sec || !strip) return;
+  sec.classList.add('h-scroll'); // CSS: şerit doğal kaydırmayı bırakır, kartlar genişler
+  const dist = () => strip.scrollWidth - strip.clientWidth;
+  if (dist() < 40) { sec.classList.remove('h-scroll'); return; }
+  const tween = gsap.to(strip, {
+    x: () => -dist(), ease: 'none',
+    scrollTrigger: {
+      trigger: sec,
+      start: () => (sec.offsetHeight < innerHeight ? 'center center' : 'top top'),
+      end: () => `+=${dist() * 1.3}`,
+      pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+    },
+  });
+  return () => { tween.scrollTrigger?.kill(); tween.kill(); gsap.set(strip, { clearProps: 'transform' }); sec.classList.remove('h-scroll'); };
+}
+
+// Zemin tonu: her ton bölümü için sabit bir katman; bölüm ekrandayken opaklığı 1 olur.
+// Sadece opacity anime edilir (arka plan rengini değiştirmek tüm sayfayı yeniden boyatır).
+function tones() {
+  const sections = gsap.utils.toArray<HTMLElement>('[data-tone]');
+  if (!sections.length) return;
+  const box = document.createElement('div');
+  box.className = 'tones';
+  box.setAttribute('aria-hidden', 'true');
+  document.body.prepend(box);
+  sections.forEach((sec) => {
+    const layer = document.createElement('div');
+    layer.style.background = `var(--tone-${sec.dataset.tone})`;
+    box.append(layer);
+    const trigger = pinSpacer(sec);
+    gsap.timeline({ scrollTrigger: { trigger, start: 'top 75%', end: 'bottom 25%', scrub: true } })
+      .fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none' })
+      .to(layer, { opacity: 1, duration: 0.6 })
+      .to(layer, { opacity: 0, duration: 0.2, ease: 'none' });
+  });
+  return () => box.remove();
+}
+
+// Derinlik: bölüm yukarı çıkarken içeriği hafifçe geri çekilir
+function depth() {
+  // son bölüm hariç: sayfa sonunda yarı solmuş kalmasın
+  gsap.utils.toArray<HTMLElement>('main > .section:not(:last-child)').forEach((sec) => {
+    const wrap = sec.querySelector<HTMLElement>(':scope > .wrap');
+    if (!wrap) return;
+    gsap.to(wrap, {
+      scale: 0.96, opacity: 0.35, ease: 'none', transformOrigin: '50% 0%',
+      scrollTrigger: { trigger: pinSpacer(sec), start: 'bottom 55%', end: 'bottom 5%', scrub: true },
+    });
+  });
+}
+
+// Pinlenmiş bölümün ölçüsü pin boşluğuyla birlikte alınır
+const pinSpacer = (el: HTMLElement) => (el.parentElement?.classList.contains('pin-spacer') ? el.parentElement : el);
 
 // "Öğrenirken paylaşıyorum": çizgi dolar, adımlar sırayla yanar
 function timeline(pin: boolean) {

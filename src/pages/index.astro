@@ -27,7 +27,7 @@ const contacts = [
 
   <!-- Büyük cümle solda, bir konunun yolculuğu sağda zaman çizelgesi olarak -->
   <!-- Masaüstünde bölüm pinlenir; kaydırdıkça çizgi dolar ve adımlar sırayla yanar (motion.ts) -->
-  <section class="statement section" data-pin-steps>
+  <section class="statement section" data-pin-steps data-tone="a">
     <div class="wrap grid">
       <h2 class="big" data-split>{site.statement.big.map((s) => <span>{s}</span>)}</h2>
       <ol class="timeline">
@@ -54,7 +54,7 @@ const contacts = [
     </div>
   </section>
 
-  <section class="section" id="projeler">
+  <section class="section" id="projeler" data-tone="b">
     <div class="wrap">
       <!-- Balık zaman çizelgesinin sonunda bu akvaryuma düşer -->
       <Aquarium>
@@ -67,7 +67,7 @@ const contacts = [
     </div>
   </section>
 
-  <section class="section" id="blog">
+  <section class="section" id="blog" data-tone="c">
     <div class="wrap">
       <div class="head">
         <h2 class="section-title" data-split>Yazıyorum</h2>
@@ -77,7 +77,7 @@ const contacts = [
     </div>
   </section>
 
-  <section class="section" id="calisiyorum">
+  <section class="section" id="calisiyorum" data-tone="d">
     <div class="wrap">
       <h2 class="section-title" data-split>Çalışıyorum</h2>
       <p class="sub reveal">Her kare bir gün. GitHub’a kod yüklediğim günler koyulaşıyor.</p>

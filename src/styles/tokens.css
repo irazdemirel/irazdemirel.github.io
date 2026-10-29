@@ -33,6 +33,12 @@
   --3d-screen: #2b2230;
   --3d-screen-text: #f7dfe6;
   --3d-plate: #6f5a66;
+
+  /* Bölüm zemin tonları (kaydırdıkça yumuşak geçiş, motion.ts → tones) */
+  --tone-a: #fbf0f3; /* pudra */
+  --tone-b: #eff7f5; /* mint */
+  --tone-c: #f8f2ea; /* krem */
+  --tone-d: #f4f0fa; /* lila */
   --ink-1: #2a2228; --ink-2: #2a2228; --ink-3: #2a2228; --ink-4: #2a2228; --ink-5: #fff;
 
   --radius: 20px;
@@ -53,6 +59,10 @@
   --accent-contrast: #1b1619;
   --shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.7);
   --wood: #4a3d42;
+  --tone-a: #241a1f;
+  --tone-b: #172120;
+  --tone-c: #221d18;
+  --tone-d: #1f1a25;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
@@ -67,5 +77,9 @@
     --accent-contrast: #1b1619;
     --shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.7);
     --wood: #4a3d42;
+    --tone-a: #241a1f;
+    --tone-b: #172120;
+    --tone-c: #221d18;
+    --tone-d: #1f1a25;
   }
 }
