@@ -71,14 +71,21 @@ const contacts = [
   <section class="section" id="iletisim">
     <div class="wrap">
       <h2 class="section-title" data-split>İletişim</h2>
-      <ul class="contacts">
-        {contacts.map((c) => (
-          <li class="reveal">
-            <span class="label">{c.label}</span>
-            <a href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener">{c.text} ↗</a>
+      <!-- Referans 3: basılınca çöken 3D klavye tuşları (oyuncu öğe; sadece burada) -->
+      <ul class="keys">
+        {contacts.map((c, i) => (
+          <li class="reveal" style={`transition-delay:${i * 70}ms`}>
+            <a class="key" href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener" style={`--k:var(--spine-${(i % 5) + 1});--ki:var(--ink-${(i % 5) + 1})`}>
+              <span class="k-label">{c.label} <span aria-hidden="true">↗</span></span>
+              <span class="k-text">{c.text}</span>
+            </a>
           </li>
         ))}
       </ul>
+      <script>
+        // iOS'ta :active (tuş basılı hali) dokunmada da çalışsın
+        document.querySelectorAll('.key').forEach((k) => k.addEventListener('touchstart', () => {}, { passive: true }));
+      </script>
     </div>
   </section>
 </Base>
@@ -105,13 +112,34 @@ const contacts = [
   .sub { color: var(--muted); margin: -24px 0 28px; max-width: 52ch; }
   .head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
   .head a { text-decoration: none; white-space: nowrap; }
-  .contacts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-  .contacts li { display: grid; grid-template-columns: 160px 1fr; padding: 18px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
-  .contacts a { font-size: clamp(18px, 2.4vw, 28px); text-decoration: none; overflow-wrap: anywhere; }
-  .contacts a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  /* Klavye tuşları: üst yüz + altta koyu "kalınlık" gölgesi; basınca tuş iner */
+  .keys { list-style: none; margin: 0; padding: 0 0 8px; display: flex; flex-wrap: wrap; gap: 18px 16px; }
+  .key {
+    --depth: 7px;
+    display: flex; flex-direction: column; gap: 2px; min-width: 150px; padding: 14px 18px 16px;
+    border-radius: 14px; text-decoration: none; color: var(--ki); background: var(--k);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, .35),
+      inset 0 -3px 0 rgba(0, 0, 0, .06),
+      0 var(--depth) 0 color-mix(in srgb, var(--k) 68%, #2a2228),
+      0 calc(var(--depth) + 10px) 22px -10px rgba(42, 34, 40, .45);
+    transform: translateY(0);
+    transition: transform .08s ease-out, box-shadow .08s ease-out;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .key:hover { color: var(--ki); --depth: 9px; transform: translateY(-2px); }
+  .key:active { --depth: 2px; transform: translateY(5px); }
+  .key:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 4px; }
+  .k-label { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; }
+  .k-text { font-family: var(--font-mono); font-size: 12px; opacity: .75; overflow-wrap: anywhere; }
+  @media (prefers-reduced-motion: reduce) {
+    .key { transition: none; }
+    .key:hover { transform: none; }
+  }
   @media (max-width: 760px) {
     .statement .grid { grid-template-columns: 1fr; gap: 40px; }
     .big { position: static; }
-    .contacts li { grid-template-columns: 1fr; gap: 4px; }
+    .keys li { flex: 1 1 140px; }
+    .key { min-width: 0; height: 100%; }
   }
 </style>

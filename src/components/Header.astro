@@ -28,8 +28,10 @@ const path = Astro.url.pathname;
   nav a { text-decoration: none; color: var(--text); }
   nav a:hover, nav a[aria-current='page'] { text-decoration: underline; text-underline-offset: 4px; }
   @media (max-width: 560px) {
-    nav { grid-template-columns: repeat(3, auto); column-gap: 12px; row-gap: 2px; justify-items: end; }
+    /* Dar ekran: 1. satır logo + lamba, 2. satır nav */
+    .row { flex-wrap: wrap; row-gap: 0; min-height: 56px; padding-bottom: 8px; }
+    .end { display: contents; }
+    nav { order: 3; flex-basis: 100%; grid-template-columns: repeat(3, auto); justify-content: space-between; column-gap: 8px; row-gap: 4px; }
     nav a { font-size: 11px; }
-    .end { gap: 8px; }
   }
 </style>
