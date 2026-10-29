@@ -1,0 +1,98 @@
+---
+/*
+  Projeler akvaryumu: zaman çizelgesindeki balık buraya "düşer" (görünür olunca yukarıdan suya dalar,
+  halkalar yayılır), sonra diğer balıklarla birlikte yüzer. İçerik (proje kartları) slot ile gelir.
+*/
+const fishes = [
+  { c: '#f7a8c0', top: 18, dur: 22, delay: -4, size: 34 },
+  { c: '#b9a3d6', top: 52, dur: 28, delay: -15, size: 26 },
+  { c: '#f2c6a0', top: 78, dur: 19, delay: -9, size: 22 },
+];
+const bubbles = Array.from({ length: 10 }, (_, i) => ({ x: 5 + i * 9.5, s: 6 + (i * 7) % 10, d: 5 + (i * 3) % 6, dl: -(i * 1.3) }));
+---
+<div class="tank">
+  <div class="water" aria-hidden="true">
+    <span class="rays"></span>
+    {bubbles.map((b) => <span class="bub" style={`left:${b.x}%;--s:${b.s}px;--d:${b.d}s;--dl:${b.dl}s`}></span>)}
+    {fishes.map((f) => (
+      <span class="swim" style={`top:${f.top}%;--d:${f.dur}s;--dl:${f.delay}s`}>
+        <svg class="fishy" viewBox="0 0 64 40" style={`width:${f.size * 1.6}px;--c:${f.c}`}><path d="M14 20 L0 6 Q4 20 0 34 Z" /><ellipse cx="34" cy="20" rx="22" ry="15" /><circle cx="46" cy="16" r="4" fill="#fff" /><circle cx="47" cy="16" r="2" fill="#2a2228" /></svg>
+      </span>
+    ))}
+    <!-- düşen balık: zaman çizelgesinden gelen -->
+    <span class="diver">
+      <svg class="fishy" viewBox="0 0 64 40" style="width:58px;--c:var(--accent)"><path d="M14 20 L0 6 Q4 20 0 34 Z" /><ellipse cx="34" cy="20" rx="22" ry="15" /><circle cx="46" cy="16" r="4" fill="#fff" /><circle cx="47" cy="16" r="2" fill="#2a2228" /><circle cx="40" cy="24" r="2.6" fill="#f7a8c0" /></svg>
+    </span>
+    <span class="splash"><i></i><i></i></span>
+    <svg class="seaweed w1" viewBox="0 0 40 120"><path d="M20 120 C5 95 35 80 18 55 C5 35 30 20 20 0" /></svg>
+    <svg class="seaweed w2" viewBox="0 0 40 120"><path d="M20 120 C35 95 5 80 22 55 C35 35 10 20 20 0" /></svg>
+    <svg class="seaweed w3" viewBox="0 0 40 120"><path d="M20 120 C5 95 35 80 18 55 C5 35 30 20 20 0" /></svg>
+    <span class="sand"></span>
+  </div>
+  <div class="content"><slot /></div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.tank').forEach((t) => {
+    new IntersectionObserver(([e], o) => { if (e.isIntersecting) { t.classList.add('dropped'); o.disconnect(); } }, { threshold: 0.35 }).observe(t);
+  });
+</script>
+
+<style>
+  .tank {
+    position: relative; border-radius: 28px; padding: 36px 20px 64px; overflow: hidden; isolation: isolate;
+    background: linear-gradient(180deg, #d8f1f4 0%, #b7e3ea 40%, #9fd3df 100%);
+    box-shadow: inset 0 0 0 6px rgba(255,255,255,.55), inset 0 14px 0 rgba(255,255,255,.35), 0 30px 50px -30px rgba(40, 90, 110, .55);
+  }
+  :global([data-theme='dark']) .tank { background: linear-gradient(180deg, #2c4a55, #1e3842 50%, #172c34); }
+  /* cam yansıması */
+  .tank::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: linear-gradient(115deg, rgba(255,255,255,.35) 0 6%, transparent 18% 80%, rgba(255,255,255,.18) 92%); z-index: 3; }
+  .water { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .content { position: relative; z-index: 2; }
+  .rays { position: absolute; inset: 0; background: repeating-linear-gradient(100deg, rgba(255,255,255,.18) 0 40px, transparent 40px 110px); mask: linear-gradient(180deg, #000, transparent 75%); animation: isik 9s ease-in-out infinite alternate; }
+  @keyframes isik { to { transform: translateX(60px); } }
+  .sand { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: radial-gradient(circle at 20% 30%, #f6e2c4 2px, transparent 3px) 0 0 / 22px 14px, linear-gradient(180deg, #f2d9b5, #e8c99d); border-radius: 50% 50% 0 0 / 18px 18px 0 0; }
+  .seaweed { position: absolute; bottom: 20px; width: 34px; height: 110px; fill: none; stroke: #7cc5a0; stroke-width: 7; stroke-linecap: round; transform-origin: bottom; animation: yosun 4s ease-in-out infinite alternate; }
+  .w1 { left: 4%; } .w2 { left: 9%; height: 80px; stroke: #9bd8b4; animation-delay: -1.5s; } .w3 { right: 6%; height: 130px; animation-delay: -2.5s; }
+  @keyframes yosun { from { transform: skewX(-6deg); } to { transform: skewX(8deg); } }
+  .bub { position: absolute; bottom: 30px; width: var(--s); height: var(--s); border-radius: 50%; border: 1.5px solid rgba(255,255,255,.85); background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.8), rgba(255,255,255,.1) 60%); animation: yuksel var(--d) linear var(--dl) infinite; }
+  @keyframes yuksel { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: 1; } 50% { transform: translate(8px, -45vh); } 100% { transform: translate(-4px, -90vh); opacity: 0; } }
+  /* yüzen balıklar: soldan sağa gider, dönüp geri gelir */
+  .swim { position: absolute; left: 0; animation: gidip-gel var(--d) ease-in-out var(--dl) infinite; }
+  .fishy { fill: var(--c); display: block; overflow: visible; filter: drop-shadow(0 4px 4px rgba(40,90,110,.25)); animation: kivril 1.2s ease-in-out infinite; }
+  @keyframes gidip-gel {
+    0% { transform: translateX(-80px) scaleX(1); } 48% { transform: translateX(calc(min(1200px, 92vw) - 40px)) scaleX(1); }
+    50% { transform: translateX(calc(min(1200px, 92vw) - 40px)) scaleX(-1); } 98% { transform: translateX(-80px) scaleX(-1); } 100% { transform: translateX(-80px) scaleX(1); }
+  }
+  @keyframes kivril { 50% { transform: translateY(-5px) rotate(-3deg); } }
+  /* düşen balık: başta suyun üstünde, görünür olunca dalar */
+  .diver { position: absolute; left: 50%; top: -70px; opacity: 0; }
+  .tank.dropped .diver { animation: dal 1.4s cubic-bezier(.5,0,.3,1) forwards, dolas 16s ease-in-out 1.4s infinite; }
+  @keyframes dal {
+    0% { opacity: 1; transform: translate(-50%, 0) rotate(80deg); }
+    55% { transform: translate(-50%, 150px) rotate(70deg); }
+    100% { opacity: 1; transform: translate(-50%, 110px) rotate(0deg); }
+  }
+  @keyframes dolas {
+    0%, 100% { opacity: 1; transform: translate(-50%, 110px); }
+    25% { transform: translate(-20%, 90px) rotate(-6deg); }
+    50% { transform: translate(-80%, 130px) scaleX(-1); }
+    75% { transform: translate(-60%, 100px) scaleX(-1) rotate(4deg); }
+  }
+  .splash { position: absolute; left: 50%; top: 22px; }
+  .splash i { position: absolute; width: 20px; height: 8px; margin: -4px 0 0 -10px; border: 2px solid rgba(255,255,255,.9); border-radius: 50%; opacity: 0; }
+  .tank.dropped .splash i { animation: halka-su 1.1s ease-out .45s; }
+  .tank.dropped .splash i:nth-child(2) { animation-delay: .65s; }
+  @keyframes halka-su { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(6); } }
+
+  /* kartlar suyun içinde okunaklı kalsın */
+  .content :global(.pc) { background: rgba(255,255,255,.72); backdrop-filter: blur(4px); border-radius: calc(var(--radius) + 6px); padding: 8px 8px 14px; }
+  :global([data-theme='dark']) .content :global(.pc) { background: rgba(27,22,25,.7); }
+  .content :global(.meta) { padding-inline: 6px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rays, .seaweed, .bub, .swim, .fishy, .splash i { animation: none !important; }
+    .bub, .swim { display: none; }
+    .diver { opacity: 1; transform: translate(-50%, 110px); animation: none !important; }
+  }
+</style>

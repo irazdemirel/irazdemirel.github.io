@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import ProjectStrip from '../components/ProjectStrip.astro';
 import RetroPC from '../components/RetroPC.astro';
+import Aquarium from '../components/Aquarium.astro';
 import Heatmap from '../components/Heatmap.astro';
 import { site } from '../data/site';
 import { getPosts, getProjects } from '../data/content';
@@ -53,11 +54,14 @@ const contacts = [
 
   <section class="section" id="projeler">
     <div class="wrap">
-      <div class="head">
-        <h2 class="section-title" data-split>Projeler</h2>
-        <a href="/projeler/" class="label">Tümü →</a>
-      </div>
-      <ProjectStrip projects={projects} />
+      <!-- Balık zaman çizelgesinin sonunda bu akvaryuma düşer -->
+      <Aquarium>
+        <div class="head">
+          <h2 class="section-title" data-split>Projeler</h2>
+          <a href="/projeler/" class="label">Tümü →</a>
+        </div>
+        <ProjectStrip projects={projects} />
+      </Aquarium>
     </div>
   </section>
 
@@ -148,6 +152,9 @@ const contacts = [
   .swimmer {
     position: absolute; left: -15px; top: calc(var(--p) * (100% - 52px));
     width: 46px; height: 52px; z-index: 2; pointer-events: none;
+    /* sona gelince kaybolur: akvaryuma "düşer" */
+    opacity: clamp(0, (1 - var(--p)) * 12, 1);
+    translate: 0 calc(max(0, var(--p) - .9) * 400px);
   }
   .fish { width: 46px; rotate: 90deg; fill: var(--accent); overflow: visible; filter: drop-shadow(0 4px 6px rgba(120,60,80,.3)); animation: yuz 1.6s ease-in-out infinite; }
   .fish .tail { fill: var(--accent-strong); transform-origin: 14px 20px; animation: kuyruk .4s ease-in-out infinite alternate; }
