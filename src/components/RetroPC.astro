@@ -10,7 +10,7 @@ const { posts } = Astro.props;
 type Key = { l: string; w?: number; p?: boolean };
 const rows: Key[][] = [
   [{ l: 'esc', p: true }, ...'1234567890'.split('').map((l) => ({ l })), { l: '⌫', w: 2, p: true }],
-  [{ l: 'tab', w: 1.5, p: true }, ...'QWERTYUIOP'.split('').map((l) => ({ l })), { l: '♡', w: 1.5, p: true }],
+  [{ l: 'tab', w: 1.5, p: true }, ...'QWERTYUIOP'.split('').map((l) => ({ l })), { l: 'del', w: 1.5, p: true }],
   [{ l: 'caps', w: 1.8, p: true }, ...'ASDFGHJKL'.split('').map((l) => ({ l })), { l: '↵', w: 2.2, p: true }],
   [{ l: '⇧', w: 2.3, p: true }, ...'ZXCVBNM'.split('').map((l) => ({ l })), { l: '⇧', w: 2.7, p: true }],
   [{ l: 'ctrl', w: 1.5, p: true }, { l: '', w: 8 }, { l: 'alt', w: 1.5, p: true }],
@@ -18,16 +18,12 @@ const rows: Key[][] = [
 ---
 <div class="retro">
   <div class="monitor">
-    <!-- kasa çıkartmaları -->
-    <span class="sticker s-heart" aria-hidden="true">♡</span>
-    <span class="sticker s-star" aria-hidden="true">★</span>
-    <span class="sticker s-tag" aria-hidden="true">yazıyorum</span>
     <div class="face">
       <div class="bezel">
         <div class="screen" data-lenis-prevent>
           <p class="prompt">C:\IRAZ\YAZILAR&gt; dir<span class="cursor" aria-hidden="true">▍</span></p>
           {posts.length === 0 ? (
-            <p class="line muted">0 dosya bulundu · ilk yazı yakında ♡</p>
+            <p class="line muted">0 dosya bulundu · ilk yazı yakında</p>
           ) : (
             <ol class="files">
               {posts.map((p, i) => (
@@ -150,10 +146,6 @@ const rows: Key[][] = [
   @keyframes led { 50% { opacity: .35; } }
 
   /* Çıkartmalar */
-  .sticker { position: absolute; z-index: 2; display: grid; place-items: center; font-weight: 800; box-shadow: 0 3px 6px rgba(90,60,40,.3); }
-  .s-heart { top: -12px; left: 22%; width: 40px; height: 40px; border-radius: 50%; background: var(--pk); color: #fff; font-size: 20px; rotate: -12deg; border: 3px solid #fff; }
-  .s-star { top: 30%; left: -16px; width: 36px; height: 36px; border-radius: 8px; background: #f7d64a; color: #e4555b; font-size: 20px; rotate: 14deg; border: 3px solid #fff; }
-  .s-tag { bottom: 46px; right: -14px; padding: 4px 10px; border-radius: 6px; background: #9fd0e4; color: #2a2228; font: 700 11px var(--font-mono); rotate: -8deg; border: 2px solid #fff; }
 
   .stand { width: 34%; height: 22px; margin-inline: auto; background: linear-gradient(180deg, var(--cream-dd), var(--cream-d)); clip-path: polygon(12% 0, 88% 0, 100% 100%, 0 100%); }
 
@@ -191,7 +183,6 @@ const rows: Key[][] = [
     .krow { gap: 3px; }
     .kc { height: 18px; font-size: 7px; border-radius: 3px; }
     .mouse { width: 32px; height: 46px; }
-    .sticker { scale: .75; }
   }
   @media (prefers-reduced-motion: reduce) {
     .cursor, .btns .led { animation: none; }

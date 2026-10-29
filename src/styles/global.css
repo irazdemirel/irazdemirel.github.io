@@ -30,7 +30,8 @@ a:hover { color: var(--accent-strong); }
   color: var(--muted);
 }
 
-.section { padding-block: clamp(64px, 10vw, 140px); }
+/* Bölüm boşluğu: iki bölüm arası ekranın %25'ini geçmez (skill kuralı) */
+.section { padding-block: clamp(56px, 7vw, 104px); }
 .section-title {
   font-family: var(--font-display);
   font-size: clamp(40px, 8vw, 96px);
@@ -40,20 +41,10 @@ a:hover { color: var(--accent-strong); }
   margin: 0 0 40px;
 }
 
-/* Harf harf belirme (Kumo "Selected works") */
-.split .ch {
-  display: inline-block;
-  opacity: 0;
-  filter: blur(8px);
-  transform: translateY(0.2em);
-  transition: opacity 0.6s, filter 0.6s, transform 0.6s;
-  transition-delay: calc(var(--i) * 35ms);
-}
-.split.in .ch { opacity: 1; filter: none; transform: none; }
-
-/* Genel kaydırınca belirme */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s, transform 0.8s; }
-.reveal.in { opacity: 1; transform: none; }
+/* Giriş animasyonlarının başlangıç hâli: sadece hareket açıkken (html.motion).
+   Asıl animasyon src/scripts/motion.ts'te (GSAP). */
+.motion .reveal { opacity: 0; visibility: hidden; transform: translateY(24px); }
+.motion [data-split]:not(.split-ready) { visibility: hidden; }
 
 .empty {
   border: 1px dashed var(--line);
@@ -79,8 +70,6 @@ html.theme-anim body, html.theme-anim body *:not(.lamp *) {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  [data-progress] { --p: 1 !important; }
-  .split .ch, .reveal { opacity: 1 !important; filter: none !important; transform: none !important; transition: none !important; }
 }
 
 /* Lenis yumuşak kaydırma */

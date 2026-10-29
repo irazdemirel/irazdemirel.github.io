@@ -5,3 +5,6 @@ dist/
 
 # Kişisel kaynaklar (fotoğraf, avatar kaynakları, videolar, referans notları) — asla GitHub'a gitmez
 referanslar/
+
+# Playwright ekran görüntüleri / test çıktıları
+.playwright-mcp/

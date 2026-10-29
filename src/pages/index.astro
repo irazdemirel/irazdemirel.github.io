@@ -4,7 +4,6 @@ import Hero from '../components/Hero.astro';
 import ProjectStrip from '../components/ProjectStrip.astro';
 import RetroPC from '../components/RetroPC.astro';
 import Aquarium from '../components/Aquarium.astro';
-import Phone from '../components/Phone.astro';
 import Heatmap from '../components/Heatmap.astro';
 import { site } from '../data/site';
 import { getPosts, getProjects } from '../data/content';
@@ -26,10 +25,11 @@ const contacts = [
   <Hero />
 
   <!-- Büyük cümle solda, bir konunun yolculuğu sağda zaman çizelgesi olarak -->
-  <section class="statement section">
+  <!-- Masaüstünde bölüm pinlenir; kaydırdıkça çizgi dolar ve adımlar sırayla yanar (motion.ts) -->
+  <section class="statement section" data-pin-steps>
     <div class="wrap grid">
-      <h2 class="big reveal">{site.statement.big.map((s) => <span>{s}</span>)}</h2>
-      <ol class="timeline" data-progress>
+      <h2 class="big" data-split>{site.statement.big.map((s) => <span>{s}</span>)}</h2>
+      <ol class="timeline">
         <!-- Kaydırdıkça çizgide aşağı yüzen balık + baloncuklar -->
         <li class="swimmer" aria-hidden="true">
           <svg class="fish" viewBox="0 0 64 40">
@@ -42,8 +42,8 @@ const contacts = [
           <span class="bub b1"></span><span class="bub b2"></span><span class="bub b3"></span>
         </li>
         {site.statement.steps.map((st, i) => (
-          <li class="reveal step" style={`transition-delay:${i * 120}ms;--c:var(--spine-${(i % 4) + 1})`}>
-            <span class="dot" aria-hidden="true">{['✎', '♡', '▶', '★'][i % 4]}</span>
+          <li class="step" style={`--c:var(--spine-${(i % 4) + 1})`}>
+            <span class="dot" aria-hidden="true">{['✎', '¶', '▶', '★'][i % 4]}</span>
             <span class="label">{String(i + 1).padStart(2, '0')}</span>
             <h3>{st.t}</h3>
             <p>{st.d}</p>
@@ -87,8 +87,7 @@ const contacts = [
   <section class="section" id="iletisim">
     <div class="wrap">
       <h2 class="section-title" data-split>İletişim</h2>
-      <div class="contact-grid">
-      <!-- Referans 3: basılınca çöken 3D klavye tuşları -->
+      <!-- Referans 3: basılınca çöken klavye tuşları (Faz 3'te gerçek 3D) -->
       <ul class="keys">
         {contacts.map((c, i) => (
           <li class="reveal" style={`transition-delay:${i * 70}ms`}>
@@ -99,8 +98,6 @@ const contacts = [
           </li>
         ))}
       </ul>
-      <div class="reveal"><Phone href={`mailto:${l.email}`} /></div>
-      </div>
       <script>
         // iOS'ta :active (tuş basılı hali) dokunmada da çalışsın
         document.querySelectorAll('.key').forEach((k) => k.addEventListener('touchstart', () => {}, { passive: true }));
@@ -110,16 +107,18 @@ const contacts = [
 </Base>
 
 <style>
-  .statement .grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: start; }
+  .statement .grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: center; }
   .big {
-    margin: 0; position: sticky; top: 96px;
+    margin: 0;
     font-family: var(--font-display); font-weight: 600;
-    font-size: clamp(48px, 8vw, 120px); line-height: 0.92; letter-spacing: -0.04em;
+    font-size: clamp(44px, 7.2vw, 112px); line-height: 0.92; letter-spacing: -0.04em;
   }
-  .big span { display: block; }
+  /* harflere bölününce kerning kaybolur, kelime biraz genişler: satır kırılmasın */
+  .big span { display: block; white-space: nowrap; }
   .big span:last-child { font-weight: 300; color: var(--accent-strong); }
-  /* Zaman çizelgesi: çizgi kaydırdıkça dolar (--p) */
-  .timeline { list-style: none; margin: 0; padding: 0 0 0 36px; position: relative; --p: 0; }
+  /* Zaman çizelgesi: çizgi kaydırdıkça dolar (--p, GSAP sürer). Hareket yoksa dolu durur. */
+  .timeline { list-style: none; margin: 0; padding: 0 0 0 36px; position: relative; --p: 1; }
+  :global(.motion) .timeline { --p: 0; }
   .timeline::before, .timeline::after { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; }
   .timeline::before { background: var(--line); }
   .timeline::after {
@@ -128,29 +127,17 @@ const contacts = [
   }
   .timeline li.step { position: relative; padding-bottom: 44px; }
   .timeline li:last-child { padding-bottom: 0; }
-  /* Adım kartı yaylanarak sağdan gelir */
-  .timeline .step.reveal { transform: translateX(40px) scale(.96); transition: opacity .6s, transform .8s cubic-bezier(.34,1.56,.64,1); }
-  .timeline .step.reveal.in { transform: none; }
+  /* Adımların ve noktaların girişi motion.ts'te (GSAP timeline) */
   .dot {
     position: absolute; left: -46px; top: -2px; width: 36px; height: 36px; border-radius: 50%;
     display: grid; place-items: center; font-size: 16px; color: #2a2228;
     background: var(--c); border: 3px solid var(--bg);
     box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--c) 70%, #2a2228), inset 0 2px 0 rgba(255,255,255,.5);
-    transform: scale(0);
-  }
-  .step.in .dot { animation: zipla .9s cubic-bezier(.34,1.56,.64,1) forwards, sallan 3s ease-in-out 1s infinite; animation-delay: inherit; }
-  .step.in .dot::after {
-    content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--c);
-    animation: halka 1.2s ease-out .3s;
-    opacity: 0;
   }
   .step h3 { transition: transform .3s cubic-bezier(.34,1.56,.64,1), color .3s; transform-origin: left; }
   .step:hover h3 { transform: rotate(-2deg) scale(1.05); color: var(--accent-strong); }
-  .step:hover .dot { animation: hopla .5s cubic-bezier(.34,1.56,.64,1); transform: scale(1); }
-  @keyframes zipla { 0% { transform: scale(0) translateY(-20px); } 60% { transform: scale(1.2) translateY(0); } 100% { transform: scale(1); } }
-  @keyframes sallan { 0%, 100% { rotate: 0deg; } 25% { rotate: -8deg; } 75% { rotate: 8deg; } }
-  @keyframes hopla { 50% { transform: scale(1.15) translateY(-8px); } }
-  @keyframes halka { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.9); opacity: 0; } }
+  .step:hover .dot { animation: hopla .5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes hopla { 50% { translate: 0 -8px; scale: 1.15; } }
 
   /* Yüzen balık: çizgide --p (kaydırma ilerlemesi) kadar aşağıda */
   .swimmer {
@@ -171,22 +158,21 @@ const contacts = [
   @keyframes baloncuk { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translate(10px, -60px); opacity: 0; } }
 
   @media (prefers-reduced-motion: reduce) {
-    .dot { transform: none; }
-    .step.in .dot, .step:hover .dot, .step.in .dot::after, .fish, .fish .tail, .bub { animation: none; }
+    .step:hover .dot, .fish, .fish .tail, .bub { animation: none; }
     .bub { display: none; }
-    .timeline .step.reveal { transform: none; }
   }
   .timeline h3 { font-family: var(--font-display); font-size: clamp(22px, 2.6vw, 30px); letter-spacing: -0.02em; margin: 4px 0 4px; }
   .timeline p { margin: 0; color: var(--muted); }
   .sub { color: var(--muted); margin: -24px 0 28px; max-width: 52ch; }
+  /* Akvaryum kutusunun kendi iç boşluğu var; üstte bölüm boşluğu daha az */
+  #projeler { padding-top: clamp(40px, 5vw, 72px); }
   .head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
   .head a { text-decoration: none; white-space: nowrap; }
-  .contact-grid { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; }
   /* Klavye tuşları: üst yüz + altta koyu "kalınlık" gölgesi; basınca tuş iner */
-  .keys { list-style: none; margin: 0; padding: 0 0 8px; display: flex; flex-wrap: wrap; gap: 18px 16px; }
+  .keys { list-style: none; margin: 0; padding: 0 0 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 20px 16px; }
   .key {
     --depth: 7px;
-    display: flex; flex-direction: column; gap: 2px; min-width: 150px; padding: 14px 18px 16px;
+    display: flex; flex-direction: column; gap: 2px; height: 100%; padding: 18px 20px 20px;
     border-radius: 14px; text-decoration: none; color: var(--ki); background: var(--k);
     box-shadow:
       inset 0 2px 0 rgba(255, 255, 255, .35),
@@ -209,9 +195,9 @@ const contacts = [
   @media (max-width: 760px) {
     .statement .grid { grid-template-columns: 1fr; gap: 40px; }
     .big { position: static; }
-    .contact-grid { grid-template-columns: 1fr; }
-    .contact-grid > .reveal { order: -1; }
-    .keys li { flex: 1 1 140px; }
-    .key { min-width: 0; height: 100%; }
+    .keys { grid-template-columns: 1fr 1fr; gap: 16px 12px; }
+    .keys li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .key { padding: 14px 14px 16px; }
+    .k-text { font-size: 10.5px; }
   }
 </style>

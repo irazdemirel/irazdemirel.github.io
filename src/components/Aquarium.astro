@@ -32,11 +32,6 @@ const bubbles = Array.from({ length: 10 }, (_, i) => ({ x: 5 + i * 9.5, s: 6 + (
   <div class="content"><slot /></div>
 </div>
 
-<script>
-  document.querySelectorAll<HTMLElement>('.tank').forEach((t) => {
-    new IntersectionObserver(([e], o) => { if (e.isIntersecting) { t.classList.add('dropped'); o.disconnect(); } }, { threshold: 0.35 }).observe(t);
-  });
-</script>
 
 <style>
   .tank {

@@ -19,7 +19,7 @@ Bu repo **canlı site**: https://irazdemirel.github.io (Astro + GitHub Pages, `m
 - Yüz/fotoğraf yok; sadece avatar.
 - Renk ve font `C:\dev\icerik-hesabi\marka\`'dan gelir, sitede sadece `src/styles/tokens.css` üzerinden uygulanır.
 - Referanslardan ilham alınır, birebir kopyalanmaz (notlar: `referanslar/referans-notlari.md`).
-- YOLO projesi notlanana kadar sitede yok.
+- YOLO projesi (Videoda Logo Tespiti) notlanana kadar sitede sadece "Çok yakında" kartı olarak durur: başlık + 1 cümle, kod/link/detay yok (Iraz'ın kararı, 29 Eki 2026).
 
 ## Kod
 - Kodu Claude yazar, ama açıklayarak ve adım adım: her adımda ne değiştiğini ve neden kısaca söyle.

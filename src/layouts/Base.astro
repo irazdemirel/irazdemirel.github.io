@@ -19,6 +19,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         var t; try { t = localStorage.getItem('tema'); } catch (e) {}
         if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         document.documentElement.dataset.theme = t;
+        // Hareket açıksa giriş animasyonlu öğeler ilk çizimde gizli başlar (motion.ts gösterir)
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
       })();
     </script>
     <meta name="color-scheme" content="light dark" />
@@ -42,30 +44,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <main><slot /></main>
     <Footer />
     <script>
+      // Tüm kaydırma animasyonları (Lenis + GSAP): src/scripts/motion.ts
       import { initMotion } from '../scripts/motion';
       initMotion();
-    </script>
-    <script>
-      // Başlıkları harflere böl + kaydırınca belirt
-      document.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
-        const text = el.textContent ?? '';
-        el.setAttribute('aria-label', text);
-        el.textContent = '';
-        [...text].forEach((c, i) => {
-          const s = document.createElement('span');
-          s.className = 'ch';
-          s.setAttribute('aria-hidden', 'true');
-          s.style.setProperty('--i', String(i));
-          s.textContent = c === ' ' ? ' ' : c;
-          el.appendChild(s);
-        });
-        el.classList.add('split');
-      });
-      const io = new IntersectionObserver(
-        (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }),
-        { threshold: 0.2 },
-      );
-      document.querySelectorAll('.split, .reveal').forEach((el) => io.observe(el));
     </script>
   </body>
 </html>
