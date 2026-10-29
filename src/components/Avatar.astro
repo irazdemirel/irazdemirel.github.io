@@ -40,6 +40,17 @@ const mid = srcs[Math.floor(frames / 2)];
       <span class="label">Avatar yakında</span>
     </div>
   )}
+  <!-- Süs: dönen inci halkası + yörüngede parıldayan yıldız/kalpler -->
+  <div class="deco" aria-hidden="true">
+    <svg class="pearls" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48.5" /></svg>
+    <div class="orbit">
+      <svg class="spark s1" viewBox="0 0 24 24"><path d="M12 0c1 7 5 11 12 12-7 1-11 5-12 12-1-7-5-11-12-12C7 11 11 7 12 0z" /></svg>
+      <svg class="heart h1" viewBox="0 0 24 24"><path d="M12 21s-9-5.6-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.4-9 12-9 12z" /></svg>
+      <svg class="spark s2" viewBox="0 0 24 24"><path d="M12 0c1 7 5 11 12 12-7 1-11 5-12 12-1-7-5-11-12-12C7 11 11 7 12 0z" /></svg>
+      <svg class="heart h2" viewBox="0 0 24 24"><path d="M12 21s-9-5.6-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.4-9 12-9 12z" /></svg>
+      <svg class="spark s3" viewBox="0 0 24 24"><path d="M12 0c1 7 5 11 12 12-7 1-11 5-12 12-1-7-5-11-12-12C7 11 11 7 12 0z" /></svg>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -120,7 +131,25 @@ const mid = srcs[Math.floor(frames / 2)];
 <style>
   .avatar { aspect-ratio: 1; width: 100%; max-width: 520px; margin-inline: auto; }
   .avatar img { width: 100%; height: 100%; object-fit: contain; }
-  .avatar { perspective: 900px; }
+  .avatar { perspective: 900px; position: relative; animation: suzul 6s ease-in-out infinite; }
+  @keyframes suzul { 50% { transform: translateY(-10px); } }
+
+  /* Süsler */
+  .deco { position: absolute; inset: -7%; pointer-events: none; }
+  .pearls { position: absolute; inset: 0; width: 100%; height: 100%; animation: don 40s linear infinite; overflow: visible; }
+  .pearls circle { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 0 4.2; }
+  .orbit { position: absolute; inset: 0; animation: don 24s linear infinite reverse; }
+  .orbit svg { position: absolute; width: 7%; transform: translate(-50%, -50%); overflow: visible; }
+  .spark { fill: #ffd27a; filter: drop-shadow(0 0 6px rgba(255, 210, 122, .8)); animation: pirilti 2.4s ease-in-out infinite; }
+  .heart { fill: var(--accent-strong); width: 6% !important; animation: kalp 1.8s ease-in-out infinite; }
+  .s1 { left: 50%; top: 0; }
+  .h1 { left: 93%; top: 25%; }
+  .s2 { left: 93%; top: 75%; width: 5% !important; animation-delay: .8s; }
+  .h2 { left: 7%; top: 75%; animation-delay: .6s; }
+  .s3 { left: 7%; top: 25%; width: 4.5% !important; animation-delay: 1.5s; }
+  @keyframes don { to { transform: rotate(360deg); } }
+  @keyframes pirilti { 0%, 100% { opacity: .35; scale: .6; } 50% { opacity: 1; scale: 1.1; } }
+  @keyframes kalp { 0%, 100% { scale: 1; } 15% { scale: 1.25; } 30% { scale: 1; } 45% { scale: 1.15; } }
   .tilt {
     position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
     box-shadow: var(--shadow), 0 0 0 10px var(--accent-soft);
@@ -143,6 +172,7 @@ const mid = srcs[Math.floor(frames / 2)];
   .placeholder .eyes { fill: var(--muted); transition: transform 0.25s ease-out; }
   .placeholder .label { position: absolute; bottom: 12%; }
   @media (prefers-reduced-motion: reduce) {
+    .avatar, .pearls, .orbit, .spark, .heart { animation: none; }
     .pose { transition: none; }
   }
 </style>
