@@ -29,6 +29,8 @@ const projeler = defineCollection({
     cover: z.string().optional(), // public/ altındaki görsel yolu
     order: z.number().default(100),
     draft: z.boolean().default(false),
+    // true = kart görünür ama tıklanmaz, "Çok yakında" yazar, detay sayfası oluşmaz
+    comingSoon: z.boolean().default(false),
   }),
 });
 

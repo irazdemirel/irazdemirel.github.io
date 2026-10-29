@@ -4,7 +4,7 @@ import Base from '../../layouts/Base.astro';
 import { getProjects } from '../../data/content';
 
 export async function getStaticPaths() {
-  const projects = await getProjects();
+  const projects = (await getProjects()).filter((p) => !p.data.comingSoon);
   return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
 }
 const { project } = Astro.props;

@@ -4,9 +4,9 @@ summary: "Flutter ve Flame ile geliştirdiğim, kule tırmanmalı pixel art mobi
 date: 2026-09-23
 status: "Prototip"
 stack: ["Flutter", "Flame"]
-repo: "https://github.com/irazdemirel/prensesi-kurtar"
-order: 20
-draft: true
+# repo: "https://github.com/irazdemirel/prensesi-kurtar"  # repo düzenlenince aç
+order: 10
+comingSoon: true # repo hazır olunca false yap → detay sayfası açılır
 ---
 
 ## Ne?

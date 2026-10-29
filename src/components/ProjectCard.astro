@@ -1,0 +1,42 @@
+---
+// Tek proje kartı. comingSoon: true ise tıklanmaz, "Çok yakında" yazar.
+import type { CollectionEntry } from 'astro:content';
+interface Props { project: CollectionEntry<'projeler'>; index: number; heading?: 'h2' | 'h3'; }
+const { project: p, index, heading = 'h3' } = Astro.props;
+const soon = p.data.comingSoon;
+const Tag = soon ? 'div' : 'a';
+const H = heading;
+const label = soon ? 'Çok yakında' : p.data.status;
+---
+<Tag class:list={['pc', { soon }]} href={soon ? undefined : `/projeler/${p.id}/`} aria-disabled={soon ? 'true' : undefined}>
+  <div class="cover">
+    {p.data.cover ? <img src={p.data.cover} alt="" loading="lazy" /> : <span class="num">{String(index + 1).padStart(2, '0')}</span>}
+    {soon && <span class="badge label">Çok yakında</span>}
+  </div>
+  <div class="meta">
+    <span class="label">{label}{p.data.draft ? ' · TASLAK' : ''}</span>
+    <H class="t">{p.data.title}</H>
+    <p>{p.data.summary}</p>
+  </div>
+</Tag>
+
+<style>
+  .pc { text-decoration: none; display: block; color: inherit; }
+  .cover {
+    position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius); background: var(--surface); overflow: hidden;
+    display: grid; place-items: center; transition: transform 0.4s;
+  }
+  .cover img { width: 100%; height: 100%; object-fit: cover; }
+  a.pc:hover .cover { transform: scale(0.98); }
+  a.pc:hover .t { text-decoration: underline; text-underline-offset: 4px; }
+  .num { font-family: var(--font-display); font-size: 72px; font-weight: 300; color: var(--line); }
+  .soon { cursor: default; }
+  .soon .cover img { filter: grayscale(1) blur(2px); opacity: 0.6; }
+  .badge {
+    position: absolute; top: 12px; left: 12px; padding: 6px 10px; border-radius: 999px;
+    background: var(--bg); color: var(--text); border: 1px solid var(--line);
+  }
+  .meta { padding-top: 14px; }
+  .t { margin: 6px 0 4px; font-size: 22px; letter-spacing: -0.01em; }
+  p { margin: 0; color: var(--muted); font-size: 15px; }
+</style>
