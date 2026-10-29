@@ -1,7 +1,7 @@
 ---
 // Kitap rafı: her kitap bir sırt. Tıklayınca yazısı açılır.
-import type { Post } from '../data/content';
-interface Props { books: Post[]; }
+import type { CultureItem } from '../data/content';
+interface Props { books: CultureItem[]; }
 const { books } = Astro.props;
 // Başlığa göre sabit ama farklı boy/kalınlık/renk
 const hash = (s: string) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
@@ -9,23 +9,30 @@ const spines = books.map((b) => {
   const h = hash(b.title);
   return {
     b,
-    height: 78 + (h % 22), // % raf yüksekliği
-    width: 46 + (h % 5) * 8, // px
+    height: 84 + (h % 16), // % raf yüksekliği
+    width: 54 + (h % 5) * 8, // px
     color: b.color ?? `var(--spine-${(h % 5) + 1})`,
     ink: b.color ? '#fff' : `var(--ink-${(h % 5) + 1})`,
   };
 });
 ---
-{books.length === 0 ? <p class="empty">Raf şimdilik boş — ilk kitap yazısı gelince burada.</p> : (
+{books.length === 0 ? <p class="empty">Raf şimdilik boş.</p> : (
   <div class="shelf-wrap"><div class="inner">
     <ul class="shelf" aria-label="Kitaplar">
       {spines.map(({ b, height, width, color, ink }) => (
         <li style={`--h:${height}%;--w:${width}px;--c:${color};--ink:${ink}`}>
-          <a href={b.href} target={b.external ? '_blank' : undefined} rel={b.external ? 'noopener' : undefined} title={`${b.title}${b.creator ? ' — ' + b.creator : ''}`}>
-            <span class="title">{b.title}</span>
-            {b.creator && <span class="author">{b.creator}</span>}
-            {b.draft && <span class="draft">taslak</span>}
-          </a>
+          {b.href ? (
+            <a class="book" href={b.href} target={b.external ? '_blank' : undefined} rel={b.external ? 'noopener' : undefined} title={`${b.title}${b.creator ? ' — ' + b.creator : ''}`}>
+              <span class="title">{b.title}</span>
+              {b.creator && <span class="author">{b.creator}</span>}
+            </a>
+          ) : (
+            <button type="button" class="book soon" aria-label={`${b.title}${b.creator ? ', ' + b.creator : ''} — yazısı yakında`}>
+              <span class="title">{b.title}</span>
+              {b.creator && <span class="author">{b.creator}</span>}
+              <span class="tip" aria-hidden="true">Yazısı yakında</span>
+            </button>
+          )}
         </li>
       ))}
       <li class="bookend" aria-hidden="true"></li>
@@ -39,10 +46,11 @@ const spines = books.map((b) => {
   .inner { min-width: max-content; }
   .shelf {
     list-style: none; margin: 0; padding: 0 24px;
-    height: 300px; display: flex; align-items: flex-end; gap: 4px; min-width: max-content;
+    height: 340px; padding-top: 44px; box-sizing: content-box; display: flex; align-items: flex-end; gap: 4px; min-width: max-content;
   }
   .shelf li { height: var(--h); width: var(--w); }
-  .shelf a {
+  .book {
+    all: unset; box-sizing: border-box; cursor: pointer;
     position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
     height: 100%; width: 100%; padding: 14px 0 12px;
     background: var(--c); color: var(--ink); text-decoration: none;
@@ -52,15 +60,22 @@ const spines = books.map((b) => {
     transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
   }
   /* sırt üstü/altı bant */
-  .shelf a::before, .shelf a::after { content: ''; position: absolute; left: 6px; right: 6px; height: 2px; background: currentColor; opacity: .35; }
-  .shelf a::before { top: 8px; }
-  .shelf a::after { bottom: 34px; }
-  .shelf a:hover, .shelf a:focus-visible { transform: translateY(-18px) rotate(-2deg); box-shadow: 0 18px 24px -12px rgba(0,0,0,.4); outline: none; }
+  .book::before, .book::after { content: ''; position: absolute; left: 6px; right: 6px; height: 2px; background: currentColor; opacity: .35; }
+  .book::before { top: 8px; }
+  .book::after { bottom: 34px; }
+  .book:hover, .book:focus-visible { transform: translateY(-18px) rotate(-2deg); box-shadow: 0 18px 24px -12px rgba(0,0,0,.4); outline: none; }
   .title, .author { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .title { font-family: var(--font-display); font-weight: 600; font-size: 15px; max-height: 70%; }
+  .title { font-family: var(--font-display); font-weight: 600; font-size: 15px; max-height: 74%; }
   .author { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .75; max-height: 22%; }
-  .draft { position: absolute; top: -20px; font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+  .book.soon { cursor: default; }
+  .tip {
+    position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(4px);
+    white-space: nowrap; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em;
+    background: var(--text); color: var(--bg); padding: 5px 9px; border-radius: 6px;
+    opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s;
+  }
+  .book.soon:hover .tip, .book.soon:focus-visible .tip { opacity: 1; transform: translateX(-50%) translateY(0); }
   .bookend { width: 14px !important; height: 46% !important; background: var(--wood); border-radius: 2px 8px 0 0; opacity: .7; }
   .board { height: 16px; background: var(--wood); border-radius: 2px; box-shadow: 0 10px 18px -10px rgba(0,0,0,.45); }
-  @media (prefers-reduced-motion: reduce) { .shelf a { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .book { transition: none; } }
 </style>

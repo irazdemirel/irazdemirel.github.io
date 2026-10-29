@@ -3,16 +3,16 @@ import Base from '../layouts/Base.astro';
 import Bookshelf from '../components/Bookshelf.astro';
 import Scenes from '../components/Scenes.astro';
 import Records from '../components/Records.astro';
-import { getPosts } from '../data/content';
+import { getCulture } from '../data/content';
 
-const posts = await getPosts();
-const books = posts.filter((p) => p.tag === 'kitap');
-const watched = posts.filter((p) => ['film', 'dizi', 'tiyatro', 'konser'].includes(p.tag));
+const items = await getCulture();
+const books = items.filter((p) => p.tag === 'kitap');
+const watched = items.filter((p) => ['film', 'dizi', 'tiyatro', 'konser'].includes(p.tag));
 ---
 <Base title="Kültür" description="Okuduğum kitaplar, izlediğim filmler, diziler, oyunlar, gittiğim konserler ve dinlediğim playlistler.">
   <section class="section wrap">
     <h1 class="section-title" data-split>Kültür</h1>
-    <p class="lede">Okuduklarım, izlediklerim, dinlediklerim. Birine tıkla, yazısı açılsın.</p>
+    <p class="lede">Okuduklarım, izlediklerim, dinlediklerim. Birine tıkla, yazısı açılsın; yazısı henüz yoksa yakında.</p>
   </section>
 
   <section class="wrap block" id="kitaplik">
@@ -21,7 +21,7 @@ const watched = posts.filter((p) => ['film', 'dizi', 'tiyatro', 'konser'].includ
   </section>
 
   <section class="wrap block" id="izlediklerim">
-    <div class="head"><h2 class="sub" data-split>İzlediklerim</h2><span class="label">{watched.length} yazı</span></div>
+    <div class="head"><h2 class="sub" data-split>İzlediklerim</h2><span class="label">{watched.length} yapım</span></div>
     <Scenes items={watched} />
   </section>
 

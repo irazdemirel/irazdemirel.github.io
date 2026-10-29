@@ -9,17 +9,8 @@ import { site } from '../data/site';
       <span class="thin">Merhaba, ben {site.name.first}</span>
       <span class="bold">{site.name.last}.</span>
     </h1>
-    <p class="learning">
-      Sıfırdan
-      <span class="sr">{site.learning.join(' ve ')}</span>
-      <span class="rot" aria-hidden="true">
-        <span class="ghost">&#8203;</span>
-        {site.learning.map((w, i) => <span class="w" data-step={i} aria-hidden="true">{w}</span>)}
-        <span class="w final" aria-hidden="true">
-          {site.learning.map((w, i) => <>{i > 0 && <span class="ve">ve</span>}<span class:list={['part', `p${i}`]}>{w}</span></>)}
-        </span>
-      </span>
-      öğreniyorum.
+    <p class="learning" aria-label="Sıfırdan öğreniyorum.">
+      <span aria-hidden="true">Sıfırdan</span><span class="rot" aria-hidden="true"><span class="ghost">&#8203;</span>{site.learning.map((w) => <span class="w">{w}</span>)}</span><span aria-hidden="true">öğreniyorum.</span>
     </p>
     <p class="intro">{site.intro}</p>
     <div class="cta">
@@ -31,24 +22,23 @@ import { site } from '../data/site';
 </section>
 
 <script>
-  // Kelimeler sırayla döner, sonunda tek cümlede birleşir (referans: Tiago Feitosa reels'i)
+  // Kelimeler birer kez geçer, sonra boşluk kapanır: "Sıfırdan öğreniyorum." (referans: Tiago Feitosa reels'i)
   document.querySelectorAll<HTMLElement>('.rot').forEach((rot) => {
-    const steps = [...rot.querySelectorAll<HTMLElement>('.w')]; // son eleman: final
-    const show = (el: HTMLElement) => {
-      steps.forEach((x) => x.classList.toggle('on', x === el));
-      rot.style.width = el.scrollWidth + 'px';
-    };
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { show(steps[steps.length - 1]); return; }
+    const words = [...rot.querySelectorAll<HTMLElement>('.w')];
+    const close = () => { words.forEach((w) => w.classList.remove('on')); rot.classList.add('closed'); rot.style.width = '0px'; };
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { close(); return; }
     let i = 0;
-    show(steps[0]);
-    const next = () => {
-      i++;
-      show(steps[i]);
-      if (i < steps.length - 1) setTimeout(next, 1800);
-      else rot.classList.add('merged');
+    const show = () => {
+      words.forEach((w, j) => w.classList.toggle('on', j === i));
+      rot.style.width = words[i].scrollWidth + 'px';
     };
-    setTimeout(next, 1800);
-    addEventListener('resize', () => show(steps[i]));
+    show();
+    const tick = () => {
+      i++;
+      if (i < words.length) { show(); setTimeout(tick, 1900); }
+      else close();
+    };
+    setTimeout(tick, 1900);
   });
 </script>
 
@@ -67,23 +57,20 @@ import { site } from '../data/site';
   .thin { font-weight: 300; }
   .bold { font-weight: 700; }
   .learning { font-size: clamp(20px, 2.4vw, 28px); margin: 0 0 16px; }
-  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .learning { user-select: none; }
   .rot {
-    display: inline-block; position: relative; overflow: visible;
-    font-weight: 600; transition: width .5s cubic-bezier(.2,.8,.2,1); white-space: nowrap;
+    display: inline-block; position: relative; white-space: nowrap; font-weight: 600;
+    margin: 0 .28em; transition: width .6s cubic-bezier(.2,.8,.2,1), margin .6s cubic-bezier(.2,.8,.2,1);
   }
+  .rot.closed { margin: 0 0 0 .28em; }
   .rot .w {
     position: absolute; left: 0; top: 0; white-space: nowrap;
-    opacity: 0; transform: translateY(0.5em); transition: opacity .4s, transform .4s;
+    opacity: 0; visibility: hidden; transform: translateY(0.5em);
+    transition: opacity .4s, transform .4s, visibility 0s .4s;
     text-decoration: underline wavy var(--muted) 1px; text-underline-offset: 6px;
   }
-  .rot .w.on { opacity: 1; transform: none; }
-  .rot .final { text-decoration: none; }
-  .final .part { display: inline-block; text-decoration: underline wavy var(--muted) 1px; text-underline-offset: 6px; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
-  .final .ve { display: inline-block; padding: 0 .3em; font-weight: 400; opacity: 0; transition: opacity .5s .35s; }
-  .final:not(.on) .p0 { transform: translateX(-40%); }
-  .final:not(.on) .p1 { transform: translateX(40%); }
-  .merged .final .ve { opacity: 1; }
+  .rot .w.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+  .rot.closed .w { transform: translateY(-0.5em); }
   .intro { color: var(--muted); max-width: 46ch; margin: 0 0 28px; }
   .cta { display: flex; gap: 12px; flex-wrap: wrap; }
   .btn {

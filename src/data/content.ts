@@ -1,5 +1,6 @@
 import { getCollection } from 'astro:content';
 import { getMediumPosts, mediumTag } from './medium';
+import { kultur, type Parca } from './kultur';
 
 // Taslaklar (draft: true) sadece yerelde (npm run dev) görünür, canlı sitede görünmez.
 const visible = (d: { data: { draft: boolean } }) => import.meta.env.DEV || !d.data.draft;
@@ -44,3 +45,31 @@ export async function getProjects() {
 
 export const fmtDate = (d: Date) =>
   d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+// Kültür sayfası öğesi: kultur.ts listesi + o türdeki yazılar (listede olmayanlar otomatik eklenir)
+export type CultureItem = {
+  title: string; tag: string; creator?: string; cover?: string; color?: string;
+  href?: string; external?: boolean; parts?: (Parca & { href?: string; external?: boolean })[];
+};
+const isExt = (u?: string) => !!u && /^https?:/.test(u);
+const norm = (s: string) => s.toLocaleLowerCase('tr').replace(/\s+/g, ' ').trim();
+
+export async function getCulture(): Promise<CultureItem[]> {
+  const posts = await getPosts();
+  const byTitle = new Map(posts.map((p) => [norm(p.title), p]));
+  const items: CultureItem[] = kultur.map((k) => {
+    const post = byTitle.get(norm(k.title));
+    const href = k.yazi ?? post?.href;
+    return {
+      title: k.title, tag: k.tur, creator: k.creator, cover: k.cover ?? post?.cover, color: k.color,
+      href, external: k.yazi ? isExt(k.yazi) : post?.external,
+      parts: k.parts?.map((pt) => ({ ...pt, href: pt.yazi, external: isExt(pt.yazi) })),
+    };
+  });
+  const listed = new Set(kultur.map((k) => norm(k.title)));
+  for (const p of posts) {
+    if (!['kitap', 'film', 'dizi', 'tiyatro', 'konser'].includes(p.tag) || listed.has(norm(p.title))) continue;
+    items.push({ title: p.title, tag: p.tag, creator: p.creator, cover: p.cover, color: p.color, href: p.href, external: p.external });
+  }
+  return items;
+}

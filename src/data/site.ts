@@ -5,7 +5,7 @@ export const site = {
   description:
     'Deep learning ve siber güvenliği sıfırdan öğrenirken yaptığım projeler, notlar ve kitap/dizi/film/tiyatro/konser yazıları.',
   // Hero'da dönen kelimeler: "Sıfırdan ___ öğreniyorum"
-  learning: ['deep learning', 'siber güvenlik'], // sırayla döner, sonra birleşir
+  learning: ['siber güvenlik', 'deep learning'], // birer kez geçer, sonra "Sıfırdan öğreniyorum" birleşir
   intro:
     'Yazılım sektöründe çalışıyorum. Öğrendiklerimi, projelerimi ve izlediğim, okuduğum, dinlediğim şeyleri burada yazıyorum.',
   statement: {
@@ -22,7 +22,7 @@ export const site = {
     email: 'iraz.demirel@gmail.com',
     linkedin: 'https://www.linkedin.com/in/irazdemirel',
     github: 'https://github.com/irazdemirel',
-    medium: '',
+    medium: 'https://medium.com/@iraz.demirel',
     instagram: '',
     tiktok: '',
   },
