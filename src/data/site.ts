@@ -30,7 +30,8 @@ export const site = {
   },
   // Avatar kareleri: public/avatar/frame-01.webp, frame-02.webp ... (bkz. README)
   avatar: {
-    frames: 0, // 0 = henüz kare yok, yer tutucu gösterilir
+    frames: 0, // 0 = video kareleri yok → `image` imlece doğru eğilir
+    image: '/avatar/avatar.webp', // tek görsel (kareler gelene kadar)
     pattern: '/avatar/frame-{n}.webp',
     alt: 'Iraz’ın avatarı',
   },
