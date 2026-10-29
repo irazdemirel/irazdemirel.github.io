@@ -13,7 +13,7 @@ export const site = {
     // Zaman çizelgesi: bir konunun yolculuğu (öğren → not al → paylaş → uygula)
     // href/link: varsa kartta küçük bir bağlantı çıkar
     steps: [
-      { t: 'Öğreniyorum', d: 'Deep learning ve siber güvenlik, sıfırdan.' },
+      { t: 'Öğreniyorum', d: 'Deep learning, siber güvenlik ve Flutter, sıfırdan.' },
       { t: 'Not alıyorum', d: 'Anladığım her şeyi kendi cümlelerimle yazıya döküyorum.' },
       { t: 'Paylaşıyorum', d: 'Notlarım blogda ve Medium’da yazıya dönüşüyor.', href: '/blog/', link: 'Blog' },
       { t: 'Uyguluyorum', d: 'Öğrendiğimi projelerde deneyip geliştiriyorum.', href: '/projeler/', link: 'Projeler' },
