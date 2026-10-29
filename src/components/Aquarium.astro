@@ -40,7 +40,10 @@ const bubbles = Array.from({ length: 10 }, (_, i) => ({ x: 5 + i * 9.5, s: 6 + (
 
 <style>
   .tank {
-    position: relative; border-radius: 28px; padding: 36px 20px 64px; overflow: hidden; isolation: isolate;
+    /* kenar boşluğuna taşar: içerik diğer bölümlerle aynı sol çizgide */
+    --bleed: clamp(10px, (100vw - 100%) / 2 - 14px, 32px);
+    margin-inline: calc(-1 * var(--bleed));
+    position: relative; border-radius: 28px; padding: 36px var(--bleed) 64px; overflow: hidden; isolation: isolate;
     background: linear-gradient(180deg, #d8f1f4 0%, #b7e3ea 40%, #9fd3df 100%);
     box-shadow: inset 0 0 0 6px rgba(255,255,255,.55), inset 0 14px 0 rgba(255,255,255,.35), 0 30px 50px -30px rgba(40, 90, 110, .55);
   }
