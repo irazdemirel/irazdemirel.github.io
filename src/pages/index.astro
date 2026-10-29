@@ -21,6 +21,13 @@ const contacts = [
   l.instagram && { label: 'Instagram', href: l.instagram, text: 'Instagram' },
   l.tiktok && { label: 'TikTok', href: l.tiktok, text: 'TikTok' },
 ].filter(Boolean) as { label: string; href: string; text: string }[];
+// Zaman çizelgesi ikonları (çizgi): not, yazı, video, proje
+const icons = [
+  '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/>',
+  '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h4"/>',
+  '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/>',
+  '<path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/>',
+];
 ---
 <Base>
   <Hero />
@@ -44,10 +51,13 @@ const contacts = [
         </li>
         {site.statement.steps.map((st, i) => (
           <li class="step" style={`--c:var(--spine-${(i % 4) + 1})`}>
-            <span class="dot" aria-hidden="true">{['✎', '¶', '▶', '★'][i % 4]}</span>
-            <span class="label">{String(i + 1).padStart(2, '0')}</span>
+            <span class="dot" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><Fragment set:html={icons[i % 4]} /></svg>
+            </span>
+            <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
             <h3>{st.t}</h3>
             <p>{st.d}</p>
+            {st.href && <a class="go label" href={st.href}>{st.link} →</a>}
           </li>
         ))}
       </ol>
@@ -104,31 +114,46 @@ const contacts = [
   .big span { display: block; white-space: nowrap; }
   .big span:last-child { font-weight: 300; color: var(--accent-strong); }
   /* Zaman çizelgesi: çizgi kaydırdıkça dolar (--p, GSAP sürer). Hareket yoksa dolu durur. */
-  .timeline { list-style: none; margin: 0; padding: 0 0 0 36px; position: relative; --p: 1; }
+  .timeline { list-style: none; margin: 0; padding: 0 0 0 60px; position: relative; --p: 1; display: grid; gap: 16px; }
   :global(.motion) .timeline { --p: 0; }
-  .timeline::before, .timeline::after { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; }
+  .timeline::before, .timeline::after { content: ''; position: absolute; left: 19px; top: 28px; bottom: 28px; width: 2px; border-radius: 2px; }
   .timeline::before { background: var(--line); }
   .timeline::after {
     background: linear-gradient(var(--spine-1), var(--spine-2), var(--spine-3), var(--spine-4));
-    transform-origin: top; transform: scaleY(var(--p)); width: 4px; left: 6px;
+    transform-origin: top; transform: scaleY(var(--p)); width: 4px; left: 18px;
   }
-  .timeline li.step { position: relative; padding-bottom: 44px; }
-  .timeline li:last-child { padding-bottom: 0; }
-  /* Adımların ve noktaların girişi motion.ts'te (GSAP timeline) */
+  /* Adım kartı: kendi renginde yumuşak zemin, arkada büyük soluk numara.
+     Girişleri motion.ts'te (GSAP timeline) */
+  .timeline li.step {
+    position: relative; padding: 18px clamp(84px, 8vw, 112px) 20px 22px; border-radius: 18px; /* sağda numaraya yer */
+    background: color-mix(in srgb, var(--c) 13%, var(--bg));
+    border: 1px solid color-mix(in srgb, var(--c) 32%, transparent);
+    box-shadow: 0 14px 30px -24px color-mix(in srgb, var(--c) 80%, #2a2228);
+    transition: translate .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s;
+  }
+  .step:hover { translate: 6px 0; box-shadow: 0 20px 40px -24px color-mix(in srgb, var(--c) 90%, #2a2228); }
+  .num {
+    position: absolute; right: 18px; top: 50%; translate: 0 -50%;
+    font-family: var(--font-display); font-size: clamp(48px, 5vw, 72px); font-weight: 800; line-height: 1; letter-spacing: -0.04em;
+    color: color-mix(in srgb, var(--c) 55%, transparent); pointer-events: none;
+  }
   .dot {
-    position: absolute; left: -46px; top: -2px; width: 36px; height: 36px; border-radius: 50%;
-    display: grid; place-items: center; font-size: 16px; color: #2a2228;
+    position: absolute; left: -60px; top: 50%; margin-top: -20px; width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center; color: #2a2228;
     background: var(--c); border: 3px solid var(--bg);
     box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--c) 70%, #2a2228), inset 0 2px 0 rgba(255,255,255,.5);
   }
-  .step h3 { transition: transform .3s cubic-bezier(.34,1.56,.64,1), color .3s; transform-origin: left; }
-  .step:hover h3 { transform: rotate(-2deg) scale(1.05); color: var(--accent-strong); }
+  .dot svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+  .go { display: inline-block; margin-top: 10px; text-decoration: none; color: var(--accent-strong); position: relative; z-index: 1; }
+  .go:hover { color: var(--text); }
+  .step h3 { transition: color .3s; }
+  .step:hover h3 { color: var(--accent-strong); }
   .step:hover .dot { animation: hopla .5s cubic-bezier(.34,1.56,.64,1); }
   @keyframes hopla { 50% { translate: 0 -8px; scale: 1.15; } }
 
   /* Yüzen balık: çizgide --p (kaydırma ilerlemesi) kadar aşağıda */
   .swimmer {
-    position: absolute; left: -15px; top: calc(var(--p) * (100% - 52px));
+    position: absolute; left: -3px; top: calc(var(--p) * (100% - 52px));
     width: 46px; height: 52px; z-index: 2; pointer-events: none;
     /* sona gelince kaybolur: akvaryuma "düşer" */
     opacity: clamp(0, (1 - var(--p)) * 12, 1);
@@ -146,10 +171,11 @@ const contacts = [
 
   @media (prefers-reduced-motion: reduce) {
     .step:hover .dot, .fish, .fish .tail, .bub { animation: none; }
+    .step:hover { translate: none; }
     .bub { display: none; }
   }
-  .timeline h3 { font-family: var(--font-display); font-size: clamp(22px, 2.6vw, 30px); letter-spacing: -0.02em; margin: 4px 0 4px; }
-  .timeline p { margin: 0; color: var(--muted); }
+  .timeline h3 { font-family: var(--font-display); font-size: clamp(22px, 2.4vw, 28px); letter-spacing: -0.02em; margin: 0 0 4px; position: relative; }
+  .timeline p { margin: 0; color: var(--muted); max-width: 30ch; position: relative; }
   .sub { color: var(--muted); margin: -24px 0 28px; max-width: 52ch; }
   /* Akvaryum kutusunun kendi iç boşluğu var; üstte bölüm boşluğu daha az */
   #projeler { padding-top: clamp(40px, 5vw, 72px); }

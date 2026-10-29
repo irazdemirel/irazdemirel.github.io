@@ -11,11 +11,12 @@ export const site = {
   statement: {
     big: ['Öğrenirken', 'paylaşıyorum.'],
     // Zaman çizelgesi: bir konunun yolculuğu
+    // href/link: varsa kartta küçük bir bağlantı çıkar
     steps: [
-      { t: 'Not', d: 'Her konu önce notlarıma düşer.' },
-      { t: 'Blog yazısı', d: 'Notlar bir yazıya dönüşür.' },
-      { t: 'Kısa video', d: 'Yazıdan kısa bir video çıkar.' },
-      { t: 'Proje', d: 'Bazen de bir projeye.' },
+      { t: 'Not alıyorum', d: 'Her yeni konu önce notlarıma düşer.' },
+      { t: 'Yazıyorum', d: 'Notlar toparlanıp bir blog yazısına dönüşür.', href: '/blog/', link: 'Blog' },
+      { t: 'Anlatıyorum', d: 'Yazının özü kısa bir videoya sığar.' },
+      { t: 'Üretiyorum', d: 'Bazen de hepsi bir projeye dönüşür.', href: '/projeler/', link: 'Projeler' },
     ],
   },
   // Boş bırakılan link sitede görünmez.
