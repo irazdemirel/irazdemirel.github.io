@@ -1,13 +1,19 @@
 ---
 import Avatar from './Avatar.astro';
 import { site } from '../data/site';
+// İsim harf harf belirir (referans 2); her harf kendi sırasıyla gecikir
+const { first, last } = site.name;
+const letters = (s: string, start: number) => [...s].map((c, i) => ({ c, i: start + i }));
 ---
 <section class="hero wrap hero-out" id="top">
   <div class="text">
     <p class="label">Portfolyo · Blog</p>
-    <h1>
-      <span class="thin">Merhaba, ben</span>
-      <span class="bold">{site.name.first}.</span>
+    <h1 aria-label={`Merhaba, ben ${first} ${last}.`}>
+      <span class="hi" aria-hidden="true"><em>Merhaba,</em> ben</span>
+      <span class="name" aria-hidden="true">
+        <span class="first">{letters(first, 0).map((l) => <span class="ch" style={`--i:${l.i}`}>{l.c}</span>)}</span>
+        <span class="last">{letters(last, first.length).map((l) => <span class="ch" style={`--i:${l.i}`}>{l.c}</span>)}</span>
+      </span>
     </h1>
     <p class="learning" aria-label="Sıfırdan öğreniyorum.">
       <span aria-hidden="true">Sıfırdan</span><span class="rot" aria-hidden="true"><span class="ghost">&#8203;</span>{site.learning.map((w) => <span class="w">{w}</span>)}</span><span aria-hidden="true">öğreniyorum.</span>
@@ -53,9 +59,24 @@ import { site } from '../data/site';
     line-height: 0.98; letter-spacing: -0.035em;
     margin: 16px 0 24px;
   }
-  h1 span { display: block; }
-  .thin { font-weight: 300; }
-  .bold { font-weight: 800; color: var(--accent-strong); }
+  h1 > span { display: block; }
+  .hi { font-size: 0.5em; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 0.15em; }
+  /* Referans 3: bir kelime italik + renkli */
+  .hi em { font-style: italic; font-weight: 500; color: var(--accent-strong); }
+  .name .first, .name .last { display: inline-block; white-space: nowrap; }
+  .name .first { font-weight: 300; margin-right: 0.22em; }
+  .name .last { font-weight: 800; }
+  .name .ch {
+    display: inline-block;
+    animation: harf .7s cubic-bezier(.2,.8,.2,1) both;
+    animation-delay: calc(250ms + var(--i) * 55ms);
+  }
+  @keyframes harf {
+    from { opacity: 0; transform: translateY(0.35em); filter: blur(6px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .name .ch { animation: none; }
+  }
   .learning { font-size: clamp(20px, 2.4vw, 28px); margin: 0 0 16px; }
   .learning { user-select: none; }
   .rot {
