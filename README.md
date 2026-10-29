@@ -28,5 +28,9 @@ Teknoloji: Astro (statik site) · Yayın: GitHub Pages (ücretsiz), `main`'e her
    (SURE = videonun saniyesi; amaç ~24 kare.)
 4. `src/data/site.ts` → `avatar.frames` = kare sayısı.
 
+**3 poz (öncelikli):** `referanslar/avatar/` içine `sol.png`, `orta.png`, `sag.png` koy → `npm run avatar`.
+`public/avatar/poz-*.webp` oluşur; dosyalar varsa site kareler yerine 3 pozu kullanır.
+Kaynak PNG'ler git'e girmez, sadece webp'ler girer.
+
 ## Yerelde çalıştırma
 `npm install` → `npm run dev` → http://localhost:4321

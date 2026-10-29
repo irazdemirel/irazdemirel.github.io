@@ -33,6 +33,8 @@ export const site = {
     frames: 31, // PixVerse videosundan: 01 = sola bakış … 16 = karşı … 31 = sağa bakış
     image: '/avatar/avatar.webp', // tek görsel (kareler gelene kadar)
     pattern: '/avatar/frame-{n}.webp',
+    // 3 poz (sol, orta, sağ): dosyalar varsa karelerin yerine bunlar kullanılır. `npm run avatar` üretir.
+    poses: ['/avatar/poz-sol.webp', '/avatar/poz-orta.webp', '/avatar/poz-sag.webp'],
     alt: 'Iraz’ın avatarı',
   },
 };

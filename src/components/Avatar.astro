@@ -1,17 +1,30 @@
 ---
 /*
-  İmleci takip eden avatar (referans: abie.learns reels'i).
-  site.ts → avatar.frames > 0 olunca public/avatar/frame-01.webp ... kareleri kullanılır:
-  imlecin yatay konumu → kare numarası. Kareler soldan bakış → karşı → sağa bakış sırasıyla olmalı.
+  İmleci takip eden avatar. Öncelik sırası:
+  1. 3 poz (referans: DeuOaVaNGnc reels'i): public/avatar/poz-sol|orta|sag.webp varsa
+     imlecin bulunduğu bölge (sol / orta / sağ üçte bir) → o poz, yumuşak geçişle.
+     Kaynaklar referanslar/avatar/sol.png… → `npm run avatar` webp'ye çevirir (bkz. README).
+  2. Kareler: site.ts → avatar.frames > 0 ise frame-01.webp … (imlecin yatay konumu → kare).
+  3. Tek görsel, 4. yer tutucu.
 */
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { site } from '../data/site';
-const { frames, pattern, alt, image } = site.avatar;
+const { frames, pattern, alt, image, poses } = site.avatar;
+const hasPoses = poses.every((p) => existsSync(join(process.cwd(), 'public', p)));
 const pad = (n: number) => String(n).padStart(2, '0');
-const srcs = Array.from({ length: frames }, (_, i) => pattern.replace('{n}', pad(i + 1)));
+const srcs = hasPoses ? [] : Array.from({ length: frames }, (_, i) => pattern.replace('{n}', pad(i + 1)));
 const mid = srcs[Math.floor(frames / 2)];
 ---
 <div class="avatar" data-frames={JSON.stringify(srcs)}>
-  {frames > 0 ? (
+  {hasPoses ? (
+    <div class="tilt poses">
+      {poses.map((p, i) => (
+        <img class:list={['pose', { on: i === 1 }]} src={p} alt={i === 1 ? alt : ''} aria-hidden={i === 1 ? undefined : 'true'} width="640" height="640" fetchpriority={i === 1 ? 'high' : undefined} />
+      ))}
+      <span class="shine" aria-hidden="true" />
+    </div>
+  ) : frames > 0 ? (
     <div class="tilt"><img class="still" src={mid} alt={alt} width="560" height="560" fetchpriority="high" /><span class="shine" aria-hidden="true" /></div>
   ) : image ? (
     <div class="tilt"><img class="still" src={image} alt={alt} width="800" height="800" fetchpriority="high" /><span class="shine" aria-hidden="true" /></div>
@@ -32,39 +45,65 @@ const mid = srcs[Math.floor(frames / 2)];
 <script>
   document.querySelectorAll<HTMLElement>('.avatar').forEach((root) => {
     const srcs: string[] = JSON.parse(root.dataset.frames || '[]');
-    const img = root.querySelector('img');
+    const poses = [...root.querySelectorAll<HTMLImageElement>('.pose')];
+    const img = poses.length ? null : root.querySelector('img');
     const eyes = root.querySelector<SVGGElement>('.eyes');
     const tilt = root.querySelector<HTMLElement>('.tilt');
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const touch = matchMedia('(hover: none)').matches;
 
     // Kareleri önden yükle
     srcs.forEach((s) => { const i = new Image(); i.src = s; });
+
+    // 3 poz: 0 = sol, 1 = orta, 2 = sağ. Sınırda titremesin diye küçük pay (hysteresis).
+    let pose = 1;
+    const setPose = (n: number) => {
+      if (n === pose) return;
+      pose = n;
+      poses.forEach((p, i) => p.classList.toggle('on', i === n));
+    };
+    const poseFor = (t: number) => {
+      const pad = 0.04;
+      if (pose === 0) return t > 1 / 3 + pad ? (t > 2 / 3 ? 2 : 1) : 0;
+      if (pose === 2) return t < 2 / 3 - pad ? (t < 1 / 3 ? 0 : 1) : 2;
+      return t < 1 / 3 - pad ? 0 : t > 2 / 3 + pad ? 2 : 1;
+    };
 
     let raf = 0;
     let y = window.innerHeight / 2;
     const update = (x: number) => {
       const t = Math.min(1, Math.max(0, x / window.innerWidth)); // 0 = sol, 1 = sağ
+      if (poses.length) setPose(poseFor(t));
       if (img && srcs.length) {
         const src = srcs[Math.round(t * (srcs.length - 1))];
         if (img.getAttribute('src') !== src) img.setAttribute('src', src);
       }
       if (tilt) {
-        // Tek görsel: imlece doğru hafif 3D dönüş
+        // imlece doğru hafif 3D dönüş (kare/poz varsa daha az)
         tilt.style.setProperty('--rx', `${((y / window.innerHeight) - 0.5) * -10}deg`);
-        tilt.style.setProperty('--ry', `${(t - 0.5) * (srcs.length ? 8 : 22)}deg`);
+        tilt.style.setProperty('--ry', `${(t - 0.5) * (srcs.length || poses.length ? 8 : 22)}deg`);
         tilt.style.setProperty('--sx', `${t * 100}%`);
       } else if (eyes) {
         eyes.style.transform = `translateX(${(t - 0.5) * 12}px)`;
       }
     };
-    window.addEventListener('pointermove', (e) => {
-      cancelAnimationFrame(raf);
-      y = e.clientY;
-      raf = requestAnimationFrame(() => update(e.clientX));
-    }, { passive: true });
-    document.addEventListener('pointerleave', () => update(window.innerWidth / 2));
-    // Dokunmatik ekranda imleç yok: avatar arada bir yavaşça etrafına bakar
-    if (srcs.length && matchMedia('(hover: none)').matches) {
+    if (!touch) {
+      window.addEventListener('pointermove', (e) => {
+        cancelAnimationFrame(raf);
+        y = e.clientY;
+        raf = requestAnimationFrame(() => update(e.clientX));
+      }, { passive: true });
+      document.addEventListener('pointerleave', () => update(window.innerWidth / 2));
+    } else if (poses.length) {
+      // Dokunmatik: orta pozda durur; ekranın bir yanına dokununca 2 sn o yöne bakar
+      let back = 0;
+      window.addEventListener('pointerdown', (e) => {
+        update(e.clientX);
+        clearTimeout(back);
+        back = window.setTimeout(() => update(window.innerWidth / 2), 2000);
+      }, { passive: true });
+    } else if (srcs.length) {
+      // Dokunmatik + kareler: avatar arada bir yavaşça etrafına bakar
       let start = 0;
       const loop = (ts: number) => {
         if (!start) start = ts;
@@ -90,6 +129,9 @@ const mid = srcs[Math.floor(frames / 2)];
     transform-style: preserve-3d;
   }
   .tilt .still { object-fit: cover; transform: scale(1.06); }
+  /* 3 poz üst üste; görünen poz yumuşakça belirir */
+  .pose { position: absolute; inset: 0; object-fit: cover; opacity: 0; transition: opacity .35s ease; }
+  .pose.on { opacity: 1; }
   .shine { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at var(--sx, 50%) 20%, rgba(255,255,255,.28), transparent 55%); mix-blend-mode: soft-light; }
   .placeholder {
     width: 100%; height: 100%;
@@ -100,4 +142,7 @@ const mid = srcs[Math.floor(frames / 2)];
   .placeholder svg { width: 70%; fill: var(--line); }
   .placeholder .eyes { fill: var(--muted); transition: transform 0.25s ease-out; }
   .placeholder .label { position: absolute; bottom: 12%; }
+  @media (prefers-reduced-motion: reduce) {
+    .pose { transition: none; }
+  }
 </style>
