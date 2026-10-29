@@ -55,7 +55,7 @@ import { site } from '../data/site';
   }
   h1 span { display: block; }
   .thin { font-weight: 300; }
-  .bold { font-weight: 700; }
+  .bold { font-weight: 800; color: var(--accent-strong); }
   .learning { font-size: clamp(20px, 2.4vw, 28px); margin: 0 0 16px; }
   .learning { user-select: none; }
   .rot {
@@ -67,7 +67,7 @@ import { site } from '../data/site';
     position: absolute; left: 0; top: 0; white-space: nowrap;
     opacity: 0; visibility: hidden; transform: translateY(0.5em);
     transition: opacity .4s, transform .4s, visibility 0s .4s;
-    text-decoration: underline wavy var(--muted) 1px; text-underline-offset: 6px;
+    text-decoration: underline wavy var(--accent) 2px; text-underline-offset: 6px;
   }
   .rot .w.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
   .rot.closed .w { transform: translateY(-0.5em); }
@@ -76,9 +76,11 @@ import { site } from '../data/site';
   .btn {
     text-decoration: none; padding: 12px 22px; border-radius: 999px;
     background: var(--accent); color: var(--accent-contrast); font-weight: 500;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--accent); box-shadow: var(--shadow); transition: transform .2s, box-shadow .2s;
   }
-  .btn.ghost { background: transparent; color: var(--text); border-color: var(--line); }
+  .btn:hover { transform: translateY(-2px); color: var(--accent-contrast); }
+  .btn.ghost { background: var(--bg); color: var(--text); border-color: var(--line); box-shadow: none; }
+  .btn.ghost:hover { color: var(--text); border-color: var(--accent); }
   @media (max-width: 820px) {
     .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 24px; }
     .visual { order: -1; max-width: 300px; width: 70%; margin-inline: auto; }

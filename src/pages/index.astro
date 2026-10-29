@@ -91,15 +91,15 @@ const contacts = [
     font-size: clamp(48px, 8vw, 120px); line-height: 0.92; letter-spacing: -0.04em;
   }
   .big span { display: block; }
-  .big span:last-child { font-weight: 300; }
+  .big span:last-child { font-weight: 300; color: var(--accent-strong); }
   /* Zaman çizelgesi: çizgi kaydırdıkça dolar (--p) */
   .timeline { list-style: none; margin: 0; padding: 0 0 0 36px; position: relative; --p: 0; }
   .timeline::before, .timeline::after { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; }
   .timeline::before { background: var(--line); }
-  .timeline::after { background: var(--text); transform-origin: top; transform: scaleY(var(--p)); }
+  .timeline::after { background: var(--accent); transform-origin: top; transform: scaleY(var(--p)); }
   .timeline li { position: relative; padding-bottom: 44px; }
   .timeline li:last-child { padding-bottom: 0; }
-  .dot { position: absolute; left: -36px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 2px solid var(--text); }
+  .dot { position: absolute; left: -36px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 3px solid var(--accent); }
   .timeline h3 { font-family: var(--font-display); font-size: clamp(22px, 2.6vw, 30px); letter-spacing: -0.02em; margin: 4px 0 4px; }
   .timeline p { margin: 0; color: var(--muted); }
   .sub { color: var(--muted); margin: -24px 0 28px; max-width: 52ch; }

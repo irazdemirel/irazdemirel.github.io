@@ -63,10 +63,10 @@ const fmt = (s: string) => new Date(s + 'T00:00:00Z').toLocaleDateString('tr-TR'
   .cells { display: grid; grid-template-columns: repeat(var(--w), 13px); column-gap: 3px; }
   .col { display: grid; grid-template-rows: repeat(7, 13px); row-gap: 3px; }
   i { display: block; width: 13px; height: 13px; border-radius: 3px; background: var(--surface); }
-  i.l1 { background: color-mix(in srgb, var(--text) 25%, var(--surface)); }
-  i.l2 { background: color-mix(in srgb, var(--text) 45%, var(--surface)); }
-  i.l3 { background: color-mix(in srgb, var(--text) 68%, var(--surface)); }
-  i.l4 { background: var(--text); }
+  i.l1 { background: color-mix(in srgb, var(--accent) 35%, var(--surface)); }
+  i.l2 { background: color-mix(in srgb, var(--accent) 65%, var(--surface)); }
+  i.l3 { background: var(--accent); }
+  i.l4 { background: var(--accent-strong); }
   .legend { display: flex; align-items: center; gap: 4px; margin-top: 10px; }
   .legend i { width: 11px; height: 11px; }
   .legend span { margin: 0 4px; }
