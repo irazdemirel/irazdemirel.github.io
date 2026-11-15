@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="tr"> <head><meta charset="utf-8"><script>
+      // Tema sayfa çizilmeden uygulanır (yanıp sönme olmasın): varsayılan AÇIK; koyu sadece lambayla seçilirse
+      (function () {
+        var t; try { t = localStorage.getItem('tema'); } catch (e) {}
+        if (t !== 'dark') t = 'light';
+        document.documentElement.dataset.theme = t;
+        // Hareket açıksa giriş animasyonlu öğeler ilk çizimde gizli başlar (motion.ts gösterir)
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
+      })();
+    </script><meta name="color-scheme" content="light"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Bölüm 02 notları — Iraz Demirel</title><meta name="description" content="Bölüm 02 notları: veri, eğitim, değerlendirme, çıkarım; regresyon ve sınıflandırma; kavram kartı, kaynaklar, prompt örnekleri ve mini alıştırma."><link rel="canonical" href="https://irazdemirel.github.io/notlar/bolum-02/"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="sitemap" href="/sitemap-index.xml"><meta property="og:title" content="Bölüm 02 notları — Iraz Demirel"><meta property="og:description" content="Bölüm 02 notları: veri, eğitim, değerlendirme, çıkarım; regresyon ve sınıflandırma; kavram kartı, kaynaklar, prompt örnekleri ve mini alıştırma."><meta property="og:url" content="https://irazdemirel.github.io/notlar/bolum-02/"><meta property="og:type" content="website"><link rel="preconnect" href="https://open.spotify.com"><!-- Font siteden gelir (tokens.css @font-face); en çok kullanılan iki dosya erkenden iner, yazı kaymaz --><link rel="preload" href="/fonts/jakarta-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jakarta-latin-ext.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/_astro/_slug_.Bx4hrFma.css">
+<style>.not[data-astro-cid-h63ietlc]{padding-block:clamp(24px,5vw,72px)}.geri[data-astro-cid-h63ietlc]{max-width:820px;margin:24px auto 0;font-size:15px}
+.sayfa[data-astro-cid-gy2mmwpe]{--mint: #9cc5c0;--mint-koyu: #3f7f78;--cizgi: rgba(120, 150, 160, .18);position:relative;max-width:820px;margin-inline:auto;background:var(--paper);background-image:linear-gradient(to bottom,transparent 31px,var(--cizgi) 32px);background-size:100% 32px;border:1px solid var(--paper-edge);border-radius:6px;box-shadow:var(--shadow);padding:clamp(28px,6vw,64px) clamp(18px,6vw,72px)}.sayfa[data-astro-cid-gy2mmwpe]+.sayfa[data-astro-cid-gy2mmwpe]{margin-top:56px}.bant[data-astro-cid-gy2mmwpe]{position:absolute;top:-14px;left:50%;width:140px;height:28px;transform:translate(-50%) rotate(-2deg);background:var(--tape-2)}.ust[data-astro-cid-gy2mmwpe]{position:relative;padding-right:84px;margin-bottom:28px}.seri[data-astro-cid-gy2mmwpe]{margin:0 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mint-koyu)}.baslik[data-astro-cid-gy2mmwpe]{font-family:var(--font-display);font-size:clamp(28px,5vw,46px);line-height:1.08;letter-spacing:-.02em;margin:0 0 20px}.avatar[data-astro-cid-gy2mmwpe]{position:absolute;top:0;right:0;width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--mint);background:var(--accent-soft)}.eylem[data-astro-cid-gy2mmwpe]{display:flex;gap:10px;flex-wrap:wrap}.btn[data-astro-cid-gy2mmwpe]{display:inline-block;padding:10px 18px;border-radius:999px;background:var(--text);color:var(--paper);text-decoration:none;font-weight:700;font-size:15px}.btn[data-astro-cid-gy2mmwpe]:hover{color:var(--paper);background:var(--mint-koyu)}.btn[data-astro-cid-gy2mmwpe].ikincil{background:transparent;color:var(--text);border:1.5px solid var(--text)}.icerik[data-astro-cid-gy2mmwpe] h2{font-size:clamp(20px,3vw,26px);margin:36px 0 12px;padding-bottom:4px;border-bottom:3px solid var(--mint);display:inline-block}.icerik[data-astro-cid-gy2mmwpe] ul,.icerik[data-astro-cid-gy2mmwpe] ol{padding-left:1.2em}.icerik[data-astro-cid-gy2mmwpe] li{margin:6px 0}.icerik[data-astro-cid-gy2mmwpe] table{display:block;overflow-x:auto;border-collapse:collapse;width:100%;font-size:15px;background:#ffffffb3}.icerik[data-astro-cid-gy2mmwpe] th,.icerik[data-astro-cid-gy2mmwpe] td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}.icerik[data-astro-cid-gy2mmwpe] th{background:#9cc5c040}.icerik[data-astro-cid-gy2mmwpe] pre{border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:14px}.icerik[data-astro-cid-gy2mmwpe] code{font-family:var(--font-mono)}.icerik[data-astro-cid-gy2mmwpe] ol li{background:#e8a0b41a;border-left:3px solid var(--accent);padding:8px 12px;border-radius:6px;list-style-position:inside}.icerik[data-astro-cid-gy2mmwpe] a{color:var(--mint-koyu);word-break:break-word}.alt[data-astro-cid-gy2mmwpe]{margin-top:40px;padding-top:16px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}@media print{header,footer:not(.alt),.eylem[data-astro-cid-gy2mmwpe],.bant[data-astro-cid-gy2mmwpe]{display:none!important}.sayfa[data-astro-cid-gy2mmwpe]{box-shadow:none;border:none;background-image:none;padding:0}}
+</style></head> <body> <header class="hdr" data-astro-cid-3ef6ksr2> <div class="wrap row" data-astro-cid-3ef6ksr2> <a href="/" class="logo" data-astro-cid-3ef6ksr2>Iraz <b data-astro-cid-3ef6ksr2>Demirel</b></a> <div class="end" data-astro-cid-3ef6ksr2> <nav aria-label="Ana menü" data-astro-cid-3ef6ksr2> <a href="/projeler/" class="label" data-astro-cid-3ef6ksr2>Projeler</a><a href="/blog/" class="label" data-astro-cid-3ef6ksr2>Blog</a><a href="/kultur/" class="label" data-astro-cid-3ef6ksr2>Keşfediyorum</a><a href="/#calisiyorum" class="label" data-astro-cid-3ef6ksr2>Çalışıyorum</a><a href="/#iletisim" class="label" data-astro-cid-3ef6ksr2>İletişim</a> </nav> <button class="lamp" type="button" aria-label="Koyu temaya geç" data-astro-cid-ygoxlgzr> <svg viewBox="0 0 48 56" aria-hidden="true" data-astro-cid-ygoxlgzr> <defs data-astro-cid-ygoxlgzr> <linearGradient id="lamp-beam" x1="0" y1="0" x2="0" y2="1" data-astro-cid-ygoxlgzr> <stop offset="0" stop-color="#ffd59a" stop-opacity=".85" data-astro-cid-ygoxlgzr></stop> <stop offset="1" stop-color="#ffd59a" stop-opacity="0" data-astro-cid-ygoxlgzr></stop> </linearGradient> <radialGradient id="lamp-glow" data-astro-cid-ygoxlgzr> <stop offset="0" stop-color="#ffe2b0" stop-opacity=".9" data-astro-cid-ygoxlgzr></stop> <stop offset="1" stop-color="#ffe2b0" stop-opacity="0" data-astro-cid-ygoxlgzr></stop> </radialGradient> </defs> <path class="beam" d="M11 25 L3 53 H45 L37 25 Z" fill="url(#lamp-beam)" data-astro-cid-ygoxlgzr></path> <circle class="glow" cx="24" cy="25" r="14" fill="url(#lamp-glow)" data-astro-cid-ygoxlgzr></circle> <ellipse class="body" cx="24" cy="52.5" rx="11" ry="2.6" data-astro-cid-ygoxlgzr></ellipse> <rect class="body" x="22.6" y="24" width="2.8" height="28" rx="1.2" data-astro-cid-ygoxlgzr></rect> <circle class="bulb" cx="24" cy="25" r="4.2" data-astro-cid-ygoxlgzr></circle> <path class="shade" d="M8 25 C8 11 40 11 40 25 Z" data-astro-cid-ygoxlgzr></path> <g class="cord" data-astro-cid-ygoxlgzr> <line x1="34" y1="24" x2="34" y2="37" data-astro-cid-ygoxlgzr></line> <circle cx="34" cy="39" r="2.3" data-astro-cid-ygoxlgzr></circle> </g> </svg> </button> <script type="module">const e=document.querySelector(".lamp");if(e){const a=document.documentElement,n=matchMedia("(prefers-reduced-motion: reduce)").matches,l=()=>{const t=a.dataset.theme==="dark";e.setAttribute("aria-label",t?"Açık temaya geç":"Koyu temaya geç"),e.classList.toggle("off",t)};l();let s=null;e.addEventListener("pointerdown",t=>{s=t.clientY}),e.addEventListener("pointermove",t=>{s===null||n||e.style.setProperty("--pull",`${Math.min(10,Math.max(0,t.clientY-s))}px`)});const r=()=>{s=null,e.style.removeProperty("--pull")};e.addEventListener("pointerup",r),e.addEventListener("pointercancel",r),e.addEventListener("click",()=>{const t=a.dataset.theme==="dark"?"light":"dark";try{localStorage.setItem("tema",t)}catch{}n||(e.classList.remove("pulled"),e.offsetWidth,e.classList.add("pulled"),a.classList.add("theme-anim"),setTimeout(()=>a.classList.remove("theme-anim"),650)),a.dataset.theme=t,l()})}</script>  </div> </div> </header>  <main> <article class="wrap not" data-astro-cid-h63ietlc> <section class="sayfa" id="bolum-02" data-astro-cid-gy2mmwpe> <span class="bant" aria-hidden="true" data-astro-cid-gy2mmwpe></span> <header class="ust" data-astro-cid-gy2mmwpe> <p class="seri" data-astro-cid-gy2mmwpe>Sıfırdan Deep Learning · <b data-astro-cid-gy2mmwpe>Bölüm 02</b></p> <h1 class="baslik" data-astro-cid-gy2mmwpe="true">Makine örnekten nasıl öğrenir? Tek örnek: yağmur</h1> <div class="eylem" data-astro-cid-gy2mmwpe> <a class="btn" href="/notlar/bolum-02.pdf" download data-astro-cid-gy2mmwpe>PDF indir</a> <a class="btn ikincil" href="https://www.instagram.com/irazca.io/" target="_blank" rel="noopener" data-astro-cid-gy2mmwpe>Videoyu izle</a> </div> <img class="avatar" src="/avatar/avatar.webp" alt="" width="72" height="72" data-astro-cid-gy2mmwpe> </header> <div class="icerik" data-astro-cid-gy2mmwpe><h2 id="1-kısa-özet">1. Kısa özet</h2>
+<ul>
+<li>Denetimli öğrenme veri, model, eğitim, değerlendirme ve çıkarım kavramlarına dayanıyor.</li>
+<li>Veri kümeleri, özellikler ve etiket içeren örneklerden oluşuyor. Hem özelliği hem etiketi olan örneğe etiketli örnek deniyor.</li>
+<li>Eğitimde model tahminlerini gerçek değerlerle karşılaştırıyor, farka bakıp kendini düzeltiyor.</li>
+<li>Değerlendirmede etiketli veri kullanıyoruz ama modele sadece özellikleri veriyoruz; tahminleri gerçek değerlerle karşılaştırıyoruz. Bu veri, modelin eğitimde görmediği veri olmalı; yoksa model olduğundan iyi görünür.</li>
+<li>Çıkarım: memnunsak modeli etiketi olmayan yeni veride tahmin yapmak için kullanıyoruz.</li>
+<li>Dikkat: eğitilmiş modele etiketsiz veri vermek denetimsiz öğrenme değil, çıkarım.</li>
+</ul>
+<h2 id="2-tek-örnek-yağmur">2. Tek örnek: yağmur</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Adım</th><th>Yağmur örneğinde</th></tr></thead><tbody><tr><td>Veri</td><td>Sıcaklık, nem, basınç… = <strong>özellik</strong> · yağış miktarı = <strong>etiket</strong></td></tr><tr><td>Eğitim</td><td>Model tahmin eder, gerçek yağışla karşılaştırır, farka bakıp kendini düzeltir</td></tr><tr><td>Değerlendirme</td><td>Eğitimde görülmemiş etiketli veri; modele sadece özellikler; tahmin ↔ gerçek</td></tr><tr><td>Çıkarım</td><td>Bugünün sıcaklığı, nemi, basıncı → model yağışı tahmin eder (etiket yok)</td></tr></tbody></table>
+<h2 id="3-aynı-özellikler-iki-farklı-etiket">3. Aynı özellikler, iki farklı etiket</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Soru</th><th>Cevap türü</th><th>Etiket</th><th>Problem türü</th></tr></thead><tbody><tr><td>Yarın ne kadar yağacak?</td><td>sayı</td><td>yağış miktarı</td><td><strong>Regresyon</strong></td></tr><tr><td>Yarın yağacak mı?</td><td>evet / hayır</td><td>yağdı / yağmadı</td><td><strong>Sınıflandırma</strong></td></tr></tbody></table>
+<h2 id="4-kavram-kartı">4. Kavram kartı</h2>
+<ul>
+<li><strong>Özellik:</strong> Modelin baktığı bilgi (sıcaklık, nem, basınç).</li>
+<li><strong>Etiket:</strong> Tahmin edilmeye çalışılan gerçek sonuç (yağış).</li>
+<li><strong>Etiketli örnek:</strong> Hem özellik hem etiket içeren örnek.</li>
+<li><strong>Model:</strong> Özelliklerden etikete giden ilişkiyi tanımlayan sayılar; bu ilişki eğitimle keşfedilir.</li>
+<li><strong>Çıkarım:</strong> Eğitilmiş modelin etiketsiz yeni veride tahmin yapması.</li>
+<li><strong>Denetimli / denetimsiz / pekiştirmeli:</strong> Yağmur tahmini (doğru cevaplarla öğrenir) · müşterileri gruplama (doğru cevap verilmez, benzerlikleri bulur) · yürümeyi öğrenen robot (ödülle, deneme yanılmayla öğrenir).</li>
+</ul>
+<h2 id="5-beni-şaşırtan">5. Beni şaşırtan</h2>
+<p>Daha fazla özelliğe sahip veri kümelerinin her zaman daha iyi tahmin yapacağını düşünüyordum. Ama bazı özelliklerin tahmin etmeye çalıştığımız sonuçla bir ilişkisi olmayabiliyor.</p>
+<h2 id="6-kaynaklar-hepsi-ücretsiz">6. Kaynaklar (hepsi ücretsiz)</h2>
+<ul>
+<li>Google — Introduction to ML: Supervised Learning: <a href="https://developers.google.com/machine-learning/intro-to-ml/supervised">https://developers.google.com/machine-learning/intro-to-ml/supervised</a> · bu bölümün ana kaynağı.</li>
+<li>StatQuest — A Gentle Introduction to Machine Learning: <a href="https://www.youtube.com/watch?v=Gv9_4yMHFhI">https://www.youtube.com/watch?v=Gv9_4yMHFhI</a> · eğitim/test fikrini çok sade anlatıyor.</li>
+</ul>
+<h2 id="7-prompt-örnekleri">7. Prompt örnekleri</h2>
+<ol>
+<li>“Bana denetimli öğrenmeyi tek bir günlük hayat örneğiyle, veri → eğitim → değerlendirme → çıkarım adımlarıyla anlat. Her adımda özellik ve etiketin ne olduğunu yaz.”</li>
+<li>“Şu 5 problemin her biri regresyon mu, sınıflandırma mı? Nedenini tek cümleyle söyle: ev fiyatı, e-posta spam mı, yarın kaç derece, öğrenci geçer mi, kaç adet satılır.”</li>
+<li>“Eğitilmiş bir modele etiketsiz veri vermek ile denetimsiz öğrenme arasındaki farkı bir örnekle anlat ve beni 2 soruyla test et.”</li>
+</ol>
+<h2 id="8-mini-alıştırma-5-dk-google-colab">8. Mini alıştırma (5 dk, Google Colab)</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#E1E4E8">evler </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [(</span><span style="color:#79B8FF">85</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3_100_000</span><span style="color:#E1E4E8">), (</span><span style="color:#79B8FF">120</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">4_400_000</span><span style="color:#E1E4E8">), (</span><span style="color:#79B8FF">60</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2_300_000</span><span style="color:#E1E4E8">)]   </span><span style="color:#6A737D"># (m², fiyat)</span></span>
+<span class="line"><span style="color:#E1E4E8">mesajlar </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [(</span><span style="color:#9ECBFF">"Ödül kazandınız!"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"spam"</span><span style="color:#E1E4E8">), (</span><span style="color:#9ECBFF">"Yarın 10'da toplantı"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"normal"</span><span style="color:#E1E4E8">)]</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> m2, fiyat </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> evler:</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(m2, </span><span style="color:#9ECBFF">"m² →"</span><span style="color:#E1E4E8">, fiyat, </span><span style="color:#9ECBFF">"TL"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> metin, etiket </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> mesajlar:</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(metin, </span><span style="color:#9ECBFF">"→"</span><span style="color:#E1E4E8">, etiket)</span></span></code></pre>
+<p><strong>Soru:</strong> Hangi listede özellik ve etiket ne? Hangisi regresyon, hangisi sınıflandırma? Her listeye bir satır ekle.</p>
+<p><strong>Cevap (benim çözümüm):</strong> evler → özellik m², etiket fiyat → <strong>regresyon</strong> (sayı). mesajlar → özellik metin, etiket spam/normal → <strong>sınıflandırma</strong>. Eklediklerim: <code>(95, 3_600_000)</code> ve <code>("Hemen tıklayın, hediyenizi alın!", "spam")</code>.</p>
+<h2 id="9-sırada">9. Sırada</h2>
+<p>Bölüm 03: Bir veri setinin içinde ne var? (Titanic) · yeni bölümler için takipte kal: <a href="https://www.instagram.com/irazca.io/">@irazca.io</a></p></div> </section>  <p class="geri" data-astro-cid-h63ietlc><a href="/notlar/" data-astro-cid-h63ietlc>Tüm bölüm notları</a></p> </article> </main> <footer class="wrap ftr" data-astro-cid-sz7xmlte> <span class="label" data-astro-cid-sz7xmlte>© 2026 Iraz Demirel</span> <a class="label" href="#top" onclick="window.scrollTo({top:0});return false;" data-astro-cid-sz7xmlte>Yukarı ↑</a> </footer>  <script type="module" src="/_astro/Base.astro_astro_type_script_index_0_lang.BWdmCYHQ.js"></script> </body> </html> 
