@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="tr"> <head><meta charset="utf-8"><script>
+      // Tema sayfa çizilmeden uygulanır (yanıp sönme olmasın): varsayılan AÇIK; koyu sadece lambayla seçilirse
+      (function () {
+        var t; try { t = localStorage.getItem('tema'); } catch (e) {}
+        if (t !== 'dark') t = 'light';
+        document.documentElement.dataset.theme = t;
+        // Hareket açıksa giriş animasyonlu öğeler ilk çizimde gizli başlar (motion.ts gösterir)
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
+      })();
+    </script><meta name="color-scheme" content="light"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Bölüm 04 notları — Iraz Demirel</title><meta name="description" content="Bölüm 04 notları: Linear Regression, lisedeki y = mx + b'den ŷ = wx + b'ye, ağırlık ve bias, bias neden gerekli, çizgiden düzleme ve tam hesap örneği, kaynaklar, prompt örnekleri ve Colab alıştırması."><link rel="canonical" href="https://irazdemirel.github.io/notlar/bolum-04/"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="sitemap" href="/sitemap-index.xml"><meta property="og:title" content="Bölüm 04 notları — Iraz Demirel"><meta property="og:description" content="Bölüm 04 notları: Linear Regression, lisedeki y = mx + b'den ŷ = wx + b'ye, ağırlık ve bias, bias neden gerekli, çizgiden düzleme ve tam hesap örneği, kaynaklar, prompt örnekleri ve Colab alıştırması."><meta property="og:url" content="https://irazdemirel.github.io/notlar/bolum-04/"><meta property="og:type" content="website"><link rel="preconnect" href="https://open.spotify.com"><!-- Font siteden gelir (tokens.css @font-face); en çok kullanılan iki dosya erkenden iner, yazı kaymaz --><link rel="preload" href="/fonts/jakarta-latin.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/jakarta-latin-ext.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/_astro/_slug_.Dvn4tknf.css">
+<style>.not[data-astro-cid-h63ietlc]{padding-block:clamp(24px,5vw,72px)}.geri[data-astro-cid-h63ietlc]{max-width:820px;margin:24px auto 0;font-size:15px}
+.sayfa[data-astro-cid-gy2mmwpe]{--mint: #9cc5c0;--mint-koyu: #3f7f78;--cizgi: rgba(120, 150, 160, .18);position:relative;max-width:820px;margin-inline:auto;background:var(--paper);background-image:linear-gradient(to bottom,transparent 31px,var(--cizgi) 32px);background-size:100% 32px;border:1px solid var(--paper-edge);border-radius:6px;box-shadow:var(--shadow);padding:clamp(28px,6vw,64px) clamp(18px,6vw,72px)}.sayfa[data-astro-cid-gy2mmwpe]+.sayfa[data-astro-cid-gy2mmwpe]{margin-top:56px}.bant[data-astro-cid-gy2mmwpe]{position:absolute;top:-14px;left:50%;width:140px;height:28px;transform:translate(-50%) rotate(-2deg);background:var(--tape-2)}.ust[data-astro-cid-gy2mmwpe]{position:relative;padding-right:84px;margin-bottom:28px}.seri[data-astro-cid-gy2mmwpe]{margin:0 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mint-koyu)}.baslik[data-astro-cid-gy2mmwpe]{font-family:var(--font-display);font-size:clamp(28px,5vw,46px);line-height:1.08;letter-spacing:-.02em;margin:0 0 20px}.avatar[data-astro-cid-gy2mmwpe]{position:absolute;top:0;right:0;width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--mint);background:var(--accent-soft)}.eylem[data-astro-cid-gy2mmwpe]{display:flex;gap:10px;flex-wrap:wrap}.btn[data-astro-cid-gy2mmwpe]{display:inline-block;padding:10px 18px;border-radius:999px;background:var(--text);color:var(--paper);text-decoration:none;font-weight:700;font-size:15px}.btn[data-astro-cid-gy2mmwpe]:hover{color:var(--paper);background:var(--mint-koyu)}.btn[data-astro-cid-gy2mmwpe].ikincil{background:transparent;color:var(--text);border:1.5px solid var(--text)}.icerik[data-astro-cid-gy2mmwpe] h2{font-size:clamp(20px,3vw,26px);margin:36px 0 12px;padding-bottom:4px;border-bottom:3px solid var(--mint);display:inline-block}.icerik[data-astro-cid-gy2mmwpe] ul,.icerik[data-astro-cid-gy2mmwpe] ol{padding-left:1.2em}.icerik[data-astro-cid-gy2mmwpe] li{margin:6px 0}.icerik[data-astro-cid-gy2mmwpe] table{display:block;overflow-x:auto;border-collapse:collapse;width:100%;font-size:15px;background:#ffffffb3}.icerik[data-astro-cid-gy2mmwpe] th,.icerik[data-astro-cid-gy2mmwpe] td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}.icerik[data-astro-cid-gy2mmwpe] th{background:#9cc5c040}.icerik[data-astro-cid-gy2mmwpe] pre{border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:14px}.icerik[data-astro-cid-gy2mmwpe] code{font-family:var(--font-mono)}.icerik[data-astro-cid-gy2mmwpe] ol li{background:#e8a0b41a;border-left:3px solid var(--accent);padding:8px 12px;border-radius:6px;list-style-position:inside}.icerik[data-astro-cid-gy2mmwpe] a{color:var(--mint-koyu);word-break:break-word}.alt[data-astro-cid-gy2mmwpe]{margin-top:40px;padding-top:16px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}@media print{header,footer:not(.alt),.eylem[data-astro-cid-gy2mmwpe],.bant[data-astro-cid-gy2mmwpe]{display:none!important}.sayfa[data-astro-cid-gy2mmwpe]{box-shadow:none;border:none;background-image:none;padding:0}}
+</style></head> <body> <header class="hdr" data-hdr data-astro-cid-3ef6ksr2> <div class="wrap row" data-astro-cid-3ef6ksr2> <a href="/" class="logo" aria-label="Ana sayfa" data-astro-cid-3ef6ksr2>Iraz <b data-astro-cid-3ef6ksr2>Demirel</b></a> <nav class="menu" aria-label="Ana menü" data-astro-cid-3ef6ksr2> <a href="/projeler/" data-astro-cid-3ef6ksr2>Projeler</a><a href="/blog/" data-astro-cid-3ef6ksr2>Blog</a><a href="/notlar/" aria-current="page" data-astro-cid-3ef6ksr2>Notlarım</a><a href="/kultur/" data-astro-cid-3ef6ksr2>Keşfediyorum</a><a href="/#calisiyorum" data-astro-cid-3ef6ksr2>Çalışıyorum</a> </nav> <div class="end" data-astro-cid-3ef6ksr2> <a href="/#iletisim" class="cta" data-astro-cid-3ef6ksr2>İletişim</a> <button class="lamp" type="button" aria-label="Koyu temaya geç" data-astro-cid-ygoxlgzr> <svg viewBox="0 0 48 56" aria-hidden="true" data-astro-cid-ygoxlgzr> <defs data-astro-cid-ygoxlgzr> <linearGradient id="lamp-beam" x1="0" y1="0" x2="0" y2="1" data-astro-cid-ygoxlgzr> <stop offset="0" stop-color="#ffd59a" stop-opacity=".85" data-astro-cid-ygoxlgzr></stop> <stop offset="1" stop-color="#ffd59a" stop-opacity="0" data-astro-cid-ygoxlgzr></stop> </linearGradient> <radialGradient id="lamp-glow" data-astro-cid-ygoxlgzr> <stop offset="0" stop-color="#ffe2b0" stop-opacity=".9" data-astro-cid-ygoxlgzr></stop> <stop offset="1" stop-color="#ffe2b0" stop-opacity="0" data-astro-cid-ygoxlgzr></stop> </radialGradient> </defs> <path class="beam" d="M11 25 L3 53 H45 L37 25 Z" fill="url(#lamp-beam)" data-astro-cid-ygoxlgzr></path> <circle class="glow" cx="24" cy="25" r="14" fill="url(#lamp-glow)" data-astro-cid-ygoxlgzr></circle> <ellipse class="body" cx="24" cy="52.5" rx="11" ry="2.6" data-astro-cid-ygoxlgzr></ellipse> <rect class="body" x="22.6" y="24" width="2.8" height="28" rx="1.2" data-astro-cid-ygoxlgzr></rect> <circle class="bulb" cx="24" cy="25" r="4.2" data-astro-cid-ygoxlgzr></circle> <path class="shade" d="M8 25 C8 11 40 11 40 25 Z" data-astro-cid-ygoxlgzr></path> <g class="cord" data-astro-cid-ygoxlgzr> <line x1="34" y1="24" x2="34" y2="37" data-astro-cid-ygoxlgzr></line> <circle cx="34" cy="39" r="2.3" data-astro-cid-ygoxlgzr></circle> </g> </svg> </button> <script type="module">const e=document.querySelector(".lamp");if(e){const a=document.documentElement,n=matchMedia("(prefers-reduced-motion: reduce)").matches,l=()=>{const t=a.dataset.theme==="dark";e.setAttribute("aria-label",t?"Açık temaya geç":"Koyu temaya geç"),e.classList.toggle("off",t)};l();let s=null;e.addEventListener("pointerdown",t=>{s=t.clientY}),e.addEventListener("pointermove",t=>{s===null||n||e.style.setProperty("--pull",`${Math.min(10,Math.max(0,t.clientY-s))}px`)});const r=()=>{s=null,e.style.removeProperty("--pull")};e.addEventListener("pointerup",r),e.addEventListener("pointercancel",r),e.addEventListener("click",()=>{const t=a.dataset.theme==="dark"?"light":"dark";try{localStorage.setItem("tema",t)}catch{}n||(e.classList.remove("pulled"),e.offsetWidth,e.classList.add("pulled"),a.classList.add("theme-anim"),setTimeout(()=>a.classList.remove("theme-anim"),650)),a.dataset.theme=t,l()})}</script>  </div> </div> </header> <script type="module">const e=document.querySelector("[data-hdr]");if(e){const t=()=>e.toggleAttribute("data-kaydi",window.scrollY>8);t(),window.addEventListener("scroll",t,{passive:!0}),e.querySelector('.menu [aria-current="page"]')?.scrollIntoView({block:"nearest",inline:"center"})}</script>  <main> <article class="wrap not" data-astro-cid-h63ietlc> <section class="sayfa" id="bolum-04" data-astro-cid-gy2mmwpe> <span class="bant" aria-hidden="true" data-astro-cid-gy2mmwpe></span> <header class="ust" data-astro-cid-gy2mmwpe> <p class="seri" data-astro-cid-gy2mmwpe>Sıfırdan Deep Learning · <b data-astro-cid-gy2mmwpe>Bölüm 04</b></p> <h1 class="baslik" data-astro-cid-gy2mmwpe="true">İlk model: Model dediğin bazen sadece bir çizgi</h1> <div class="eylem" data-astro-cid-gy2mmwpe> <a class="btn" href="/notlar/bolum-04.pdf" download data-astro-cid-gy2mmwpe>PDF indir</a> <a class="btn ikincil" href="https://www.instagram.com/irazca.io/" target="_blank" rel="noopener" data-astro-cid-gy2mmwpe>Videoyu izle</a> </div> <img class="avatar" src="/avatar/avatar.webp" alt="" width="72" height="72" data-astro-cid-gy2mmwpe> </header> <div class="icerik" data-astro-cid-gy2mmwpe><h2 id="1-kısa-özet">1. Kısa özet</h2>
+<ul>
+<li>Makine öğrenmesinde ilk modelimi anlamaya çalışırken aslında daha önceden bildiğim bir denklemle karşılaştım: <strong>y = mx + b</strong>. Linear Regression’ın temeli bu.</li>
+<li>Linear Regression, denetimli öğrenme (supervised learning) algoritmalarından biri: verideki ilişkiyi öğrenip <strong>sayısal bir değer</strong> tahmin ediyor (ev fiyatı, satış miktarı, sıcaklık…).</li>
+<li>Makine öğrenmesinde aynı denklem <strong>ŷ = wx + b</strong> diye yazılıyor. <strong>w (ağırlık)</strong> ve <strong>b (bias)</strong> modelin eğitim sırasında öğrendiği parametreler.</li>
+<li>Bir sonucu tek bir özellik değil, birden fazla özellik etkileyebilir. O zaman her özelliğin kendi ağırlığı oluyor ve çizgi bir <strong>düzleme</strong> dönüşüyor.</li>
+</ul>
+<h2 id="2-model-dediğin-bazen-sadece-bir-çizgi">2. Model dediğin bazen sadece bir çizgi</h2>
+<p>Bir emlakçının kafasındaki kural: <em>“Metrekaresi 30 bin, üstüne 500 bin.”</em></p>
+<p><strong>100 m²’lik ev:</strong> 30.000 × 100 + 500.000 = <strong>3.500.000 TL</strong></p>
+<p>Bu bir model. Makine öğrenmesindeki fark şu: bu iki sayıyı kimse söylemiyor. Model geçmişte satılan evlere bakıp onları kendisi buluyor. Bunu bulmaya <strong>eğitim</strong> deniyor.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Sembol</th><th>Adı</th><th>Bu örnekte</th></tr></thead><tbody><tr><td>x</td><td>özellik (feature): modele verdiğim girdi</td><td>metrekare</td></tr><tr><td>y</td><td>gerçek değer (actual value)</td><td>evin gerçekte satıldığı fiyat</td></tr><tr><td>ŷ</td><td>tahmin (prediction)</td><td>modelin söylediği fiyat</td></tr><tr><td>w</td><td>ağırlık (weight): çizginin eğimi</td><td>30.000: her 1 m² tahmini 30.000 TL artırıyor</td></tr><tr><td>b</td><td>bias: çizginin y eksenini kestiği nokta</td><td>500.000</td></tr></tbody></table>
+<h2 id="3-bias-neden-gerekli">3. Bias neden gerekli?</h2>
+<p>Gerçek hayatta 0 m²’lik bir ev yok, yani b’nin tek başına bir anlamı olmayabilir. Ama bias olmazsa çizgi <strong>orijinden geçmek zorunda</strong> kalıyor ve veriye kötü oturuyor.</p>
+<p>Mini alıştırmada (aşağıda) aynı veriyi bir de bias’sız eğittim:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th></th><th>Bias var</th><th>Bias yok</th></tr></thead><tbody><tr><td>Öğrendiği ağırlık (w)</td><td>30.000</td><td>≈ 34.482</td></tr><tr><td>60 m² tahmini (gerçek: 2.300.000)</td><td>2.300.000</td><td>≈ 2.068.893</td></tr><tr><td>150 m² tahmini (gerçek: 5.000.000)</td><td>5.000.000</td><td>≈ 5.172.232</td></tr></tbody></table>
+<p>Bias’sız model eğimi yanlış öğreniyor: küçük evleri ucuz, büyük evleri pahalı tahmin ediyor.</p>
+<h2 id="4-çizgiden-düzleme-tam-hesap-örneği">4. Çizgiden düzleme: tam hesap örneği</h2>
+<p>Bir evin fiyatını sadece metrekaresine göre tahmin etmek yeterli olmayabilir. Oda sayısı ve binanın yaşı da fiyatı etkileyebilir.</p>
+<p><strong>ŷ = w1x1 + w2x2 + w3x3 + b</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Özellik</th><th>Değer</th><th>Ağırlık</th><th>Katkısı</th></tr></thead><tbody><tr><td>x1 metrekare</td><td>100</td><td>w1 = 30.000</td><td>+ 3.000.000</td></tr><tr><td>x2 oda sayısı</td><td>3</td><td>w2 = 100.000</td><td>+ 300.000</td></tr><tr><td>x3 binanın yaşı</td><td>10</td><td>w3 = −20.000</td><td>− 200.000</td></tr><tr><td>bias</td><td></td><td>b = 500.000</td><td>+ 500.000</td></tr><tr><td><strong>Tahmin</strong></td><td></td><td></td><td><strong>3.600.000 TL</strong></td></tr></tbody></table>
+<ul>
+<li>Her özelliğin kendi ağırlığı var.</li>
+<li>Diğer özellikler sabitken binanın yaşı arttığında tahmin edilen fiyat düşüyor; bunu ağırlığın <strong>negatif</strong> olmasından anlayabiliyorum. Ağırlıklar sadece miktarı değil, ilişkinin <strong>yönünü</strong> de gösteriyor.</li>
+<li>Tek özellikli doğrusal regresyonda model bir <strong>çizgi</strong>; çok özellikli doğrusal regresyonda bir <strong>düzlem</strong> veya daha yüksek boyutlu bir yapı haline geliyor.</li>
+</ul>
+<h2 id="5-kavram-kartı">5. Kavram kartı</h2>
+<ul>
+<li><strong>Linear Regression (doğrusal regresyon):</strong> Verideki ilişkiyi öğrenip sayısal bir değer tahmin eden, denetimli öğrenme algoritması.</li>
+<li><strong>Özellik (feature, x):</strong> Modele verilen girdi (metrekare, oda sayısı, yaş).</li>
+<li><strong>Tahmin (ŷ):</strong> Modelin söylediği değer; <strong>y</strong> gerçekte gözlemlenen değer.</li>
+<li><strong>Ağırlık (weight, w):</strong> Bir özelliğin tahmini ne kadar ve hangi yönde değiştirdiği.</li>
+<li><strong>Bias (b):</strong> Çizginin y eksenini kestiği nokta; çizginin orijine bağlı kalmamasını sağlıyor.</li>
+<li><strong>Eğitim:</strong> Modelin veriye bakarak ağırlık ve bias’ı bulması.</li>
+<li><strong>Multiple Linear Regression:</strong> Birden fazla özellikle tahmin; çizgi düzleme dönüşüyor.</li>
+</ul>
+<h2 id="6-beni-şaşırtan">6. Beni şaşırtan</h2>
+<p>Makine öğrenmesinde öğrenmek dediğimiz şey aslında matematiksel olarak açıklanabilen bir süreç. Modelin eğitilmesi parametrelerin öğrenilmesi, tahmin yapması ise öğrendiği parametreleri yeni verilere uygulaması demek. Bazen bir makine öğrenmesi modeli gerçekten sadece bir çizgiden ibaret.</p>
+<h2 id="7-kaynaklar-hepsi-ücretsiz">7. Kaynaklar (hepsi ücretsiz)</h2>
+<ul>
+<li>Google — Machine Learning Crash Course: Linear regression: <a href="https://developers.google.com/machine-learning/crash-course/linear-regression">https://developers.google.com/machine-learning/crash-course/linear-regression</a> · ağırlık, bias ve çok özellikli model.</li>
+<li>Google — Linear regression: Parameters exercise: <a href="https://developers.google.com/machine-learning/crash-course/linear-regression/parameters-exercise">https://developers.google.com/machine-learning/crash-course/linear-regression/parameters-exercise</a> · w ve b’yi elle değiştirip çizgiyi oturtma alıştırması.</li>
+</ul>
+<h2 id="8-prompt-örnekleri">8. Prompt örnekleri</h2>
+<ol>
+<li>“Linear Regression’ı lisedeki y = mx + b üzerinden anlat. Ev fiyatı örneğiyle w ve b’nin ne demek olduğunu göster, sonra beni 2 soruyla test et.”</li>
+<li>“ŷ = w1x1 + w2x2 + w3x3 + b formülüyle bir ev fiyatını adım adım hesaplat. Bir ağırlığın negatif olması ne anlama geliyor, açıkla.”</li>
+<li>“Bias olmazsa çizgi neden orijinden geçmek zorunda kalır? Bunu küçük bir veriyle ve Python koduyla göster.”</li>
+</ol>
+<h2 id="9-mini-alıştırma-5-dk-google-colab">9. Mini alıştırma (5 dk, Google Colab)</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> numpy </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> np</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> sklearn.linear_model </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> LinearRegression</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">m2 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> np.array([[</span><span style="color:#79B8FF">60</span><span style="color:#E1E4E8">], [</span><span style="color:#79B8FF">80</span><span style="color:#E1E4E8">], [</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">], [</span><span style="color:#79B8FF">120</span><span style="color:#E1E4E8">], [</span><span style="color:#79B8FF">150</span><span style="color:#E1E4E8">]])</span></span>
+<span class="line"><span style="color:#E1E4E8">fiyat </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 30_000</span><span style="color:#F97583"> *</span><span style="color:#E1E4E8"> m2.ravel() </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 500_000</span><span style="color:#6A737D">          # emlakçının kuralı</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">model </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> LinearRegression().fit(m2, fiyat)</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(model.coef_, model.intercept_)            </span><span style="color:#6A737D"># öğrenilen w ve b</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(model.predict([[</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">]]))                   </span><span style="color:#6A737D"># 100 m² için tahmin</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">bias_yok </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> LinearRegression(</span><span style="color:#FFAB70">fit_intercept</span><span style="color:#F97583">=</span><span style="color:#79B8FF">False</span><span style="color:#E1E4E8">).fit(m2, fiyat)</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(bias_yok.coef_, bias_yok.predict([[</span><span style="color:#79B8FF">60</span><span style="color:#E1E4E8">], [</span><span style="color:#79B8FF">150</span><span style="color:#E1E4E8">]]))</span></span></code></pre>
+<p><strong>Soru:</strong> Model hangi w ve b’yi buldu? Bias’ı kapatınca ağırlık ve tahminler nasıl değişti?</p>
+<p><strong>Cevap:</strong> w = 30.000 ve b = 500.000 (emlakçının kuralını kendisi buldu); 100 m² için 3.500.000. Bias’sız modelde w ≈ 34.482 oluyor; 60 m²’yi ≈ 2.068.893 (gerçek 2.300.000), 150 m²’yi ≈ 5.172.232 (gerçek 5.000.000) tahmin ediyor.</p>
+<h2 id="10-sırada">10. Sırada</h2>
+<p>Bölüm 05: model yanıldığını nasıl anlar? (hata ve MSE) · yeni bölümler için takipte kal: <a href="https://www.instagram.com/irazca.io/">@irazca.io</a></p></div> </section>  <p class="geri" data-astro-cid-h63ietlc><a href="/notlar/" data-astro-cid-h63ietlc>Tüm bölüm notları</a></p> </article> </main> <footer class="wrap ftr" data-astro-cid-sz7xmlte> <span class="label" data-astro-cid-sz7xmlte>© 2026 Iraz Demirel</span> <a class="label" href="#top" onclick="window.scrollTo({top:0});return false;" data-astro-cid-sz7xmlte>Yukarı ↑</a> </footer>  <script type="module" src="/_astro/Base.astro_astro_type_script_index_0_lang.BWdmCYHQ.js"></script> </body> </html> 
